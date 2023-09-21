@@ -6,7 +6,25 @@
       "type": "node",
       "request": "attach",
       "port": 9229,
-      "preLaunchTask": "func: host start"
+      "preLaunchTask": "func: host start",
+      "presentation": {
+        "hidden": true,
+        "group": "",
+        "order": 1
+      },
+      "postDebugTask": "Terminate All Tasks"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Debug",
+      "configurations": ["Attach to Node Functions"],
+      "preLaunchTask": "TTK",
+      "presentation": {
+        "group": "all",
+        "order": 1
+      },
+      "stopAll": true
     }
   ]
 }

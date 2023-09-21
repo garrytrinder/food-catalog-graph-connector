@@ -1,32 +1,81 @@
 {
-	"version": "2.0.0",
-	"tasks": [
-		{
-			"type": "func",
-			"label": "func: host start",
-			"command": "host start",
-			"problemMatcher": "$func-node-watch",
-			"isBackground": true,
-			"dependsOn": "npm build (functions)"
-		},
-		{
-			"type": "shell",
-			"label": "npm build (functions)",
-			"command": "npm run build",
-			"dependsOn": "npm install (functions)",
-			"problemMatcher": "$tsc"
-		},
-		{
-			"type": "shell",
-			"label": "npm install (functions)",
-			"command": "npm install"
-		},
-		{
-			"type": "shell",
-			"label": "npm prune (functions)",
-			"command": "npm prune --production",
-			"dependsOn": "npm build (functions)",
-			"problemMatcher": []
-		}
-	]
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "func",
+      "label": "func: host start",
+      "command": "host start",
+      "problemMatcher": "$func-node-watch",
+      "isBackground": true,
+      "dependsOn": "npm build (functions)"
+    },
+    {
+      "type": "shell",
+      "label": "npm build (functions)",
+      "command": "npm run build",
+      "dependsOn": "npm install (functions)",
+      "problemMatcher": "$tsc"
+    },
+    {
+      "type": "shell",
+      "label": "npm install (functions)",
+      "command": "npm install"
+    },
+    {
+      "type": "shell",
+      "label": "npm prune (functions)",
+      "command": "npm prune --production",
+      "dependsOn": "npm build (functions)",
+      "problemMatcher": []
+    },
+    {
+      "label": "TTK",
+      "dependsOn": ["Start local tunnel", "Provision"],
+      "dependsOrder": "sequence"
+    },
+    {
+      "label": "Start local tunnel",
+      "type": "teamsfx",
+      "command": "debug-start-local-tunnel",
+      "args": {
+        "type": "dev-tunnel",
+        "ports": [
+          {
+            "portNumber": 7071,
+            "protocol": "http",
+            "access": "public",
+            "writeToEnvironmentFile": {
+              "endpoint": "NOTIFICATION_ENDPOINT",
+              "domain": "NOTIFICATION_DOMAIN"
+            }
+          }
+        ],
+        "env": "local"
+      },
+      "isBackground": true,
+      "problemMatcher": "$teamsfx-local-tunnel-watch"
+    },
+    {
+      "label": "Provision",
+      "type": "teamsfx",
+      "command": "provision",
+      "args": {
+        "env": "local"
+      }
+    },
+    {
+      "label": "Terminate All Tasks",
+      "command": "echo ${input:terminate}",
+      "type": "shell",
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "terminate",
+      "type": "command",
+      "command": "workbench.action.tasks.terminate",
+      "args": "terminateAll"
+    }
+  ]
 }

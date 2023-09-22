@@ -14,7 +14,16 @@ Sample project that uses Teams Toolkit to simplify the process of creating a [Mi
  - Open in VSCode
  - Press `F5`
 
-## Test function
+## Test functions
+
+### Notification
 
  - Go to `Start local tunnel` terminal window to discover forwarding URL e.g. `https://<tunnelid>-7071.<region>.devtunnels.ms`
  - `curl https://<tunnelid>-7071.<region>.devtunnels.ms/api/notification`
+
+### Queue
+
+ - Open Microsoft Azure Storage Explorer
+ - Expand `Emulated & Attached` > `Emulator Default Ports` > `Queues`
+ - Create new queue called `queue-items`
+ - Create message in queue

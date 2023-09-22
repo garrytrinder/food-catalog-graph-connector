@@ -7,13 +7,14 @@
     "watch": "tsc -w",
     "prestart": "npm run build",
     "start": "func start",
+    "storage": "azurite --silent --location ./_storage_emulator --debug ./_storage_emulator/debug.log",
     "test": "echo \"No tests yet...\""
   },
-  "dependencies": {},
   "devDependencies": {
     "@azure/functions": "^3.0.0",
-    "azure-functions-core-tools": "^4.x",
     "@types/node": "18.x",
+    "azure-functions-core-tools": "^4.x",
+    "azurite": "3.26.0",
     "typescript": "^4.0.0"
   }
 }

@@ -16,5 +16,8 @@
     "azure-functions-core-tools": "^4.x",
     "azurite": "3.26.0",
     "typescript": "^4.0.0"
+  },
+  "dependencies": {
+    "@azure/data-tables": "13.2.2"
   }
 }

@@ -23,7 +23,9 @@
     "color": "color.png"
   },
   "accentColor": "#FFFFFF",
-  "validDomains": [],
+  "validDomains": [
+    "${{NOTIFICATION_ENDPOINT}}"
+  ],
   "webApplicationInfo": {
     "id": "${{AAD_APP_CLIENT_ID}}",
     "resource": "api://${{AAD_APP_CLIENT_ID}}"

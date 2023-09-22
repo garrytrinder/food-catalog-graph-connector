@@ -5,7 +5,7 @@ const httpTrigger: AzureFunction = async function (
   req: HttpRequest
 ): Promise<void> {
   context.res = {
-    body: `Hello, world! Client ID: ${process.env.AAD_APP_CLIENT_ID}`,
+    status: 202
   };
 };
 

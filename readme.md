@@ -26,25 +26,21 @@ sequenceDiagram
   participant Connector q
   participant Connector fn
   participant Content q
-  participant Content fn
-  participant Content storage
   participant Graph
-  participant External content
   
   activate MAC
   activate Connector q
   activate Content q
-  activate Content storage
   activate Graph
-  activate External content
 
-  Admin->>MAC:Toggle connector
+  Admin->>MAC:Activate connector
   MAC->>Webhook fn:Webhook(state)
   activate Webhook fn
   Webhook fn->>Connector q:message(create, id, ticket)
+  Connector q-->>Webhook fn:response(201 Created)
   Webhook fn-->>MAC:response(202 Accepted)
-  MAC-->>Admin:activated
   deactivate Webhook fn
+  MAC-->>Admin:activated
 
   alt message=create
     Connector q->>Connector fn:message(create, id, ticket)
@@ -54,6 +50,7 @@ sequenceDiagram
     Connector fn->>Graph:createSchema(connectionId)
     Graph-->>Connector fn:response(202 Accepted, location)
     Connector fn->>Connector q:message(status, location)
+    Connector q-->>Connector fn:response(201 Created)
   else message=status
     Connector q->>Connector fn:message(status, location)
     Connector fn->>Graph:operationStatus(location)
@@ -62,41 +59,16 @@ sequenceDiagram
     alt status=inprogress
       Connector fn->>Connector fn:sleep(5000)
       Connector fn->>Connector q:message(status, location)
+      Connector q-->>Connector fn:response(201 Created)
     else status=completed
-      Connector fn->>Content q:message(start, full)
+      Connector fn->>Content q:message(crawl, full)
+      Content q-->>Connector fn:response(201 Created)
     end
-  end
-
-  alt message=start
-    Content q->>Content fn:message(start)
-    activate Content fn
-    Content fn->>External content:getContent
-    External content-->>Content fn:content
-    
-    loop each content item
-      Content fn->>Content q:message(crawl, item)
-    end
-  else message=crawl
-    Content q->>Content fn:message(crawl, item)
-    Content fn->>External content:getContent(item)
-    External content-->>Content fn:content(item)
-    Content fn->>Content fn:transform(item)
-    Content fn->>Graph:externalItem(item)
-    Graph-->>Content fn:response(200 OK)
-
-    Content fn->>Content storage:getLatestItemDate
-    Content storage-->>Content fn:response(latestItemDate)
-
-    alt latestItemDate<itemDate
-      Content fn->>Content storage:updateLatestItemDate(itemDate)
-    end
-    deactivate Content fn
+    deactivate Connector fn
   end
   
-  deactivate External content
   deactivate Graph
   deactivate Content q
-  deactivate Content storage
   deactivate Connector q
   deactivate MAC
 ```
@@ -111,20 +83,19 @@ sequenceDiagram
   participant Connector q
   participant Connector fn
   participant Graph
-  participant External content
   
   activate MAC
   activate Connector q
   activate Graph
-  activate External content
 
-  Admin->>MAC:Toggle connector
+  Admin->>MAC:Deactivate connector
   MAC->>Webhook fn:Webhook(state)
   activate Webhook fn
   Webhook fn->>Connector q:message(delete)
+  Connector q-->>Webhook fn:response(201 Created)
   Webhook fn-->>MAC:response(202 Accepted)
-  MAC-->>Admin:deactivated
   deactivate Webhook fn
+  MAC-->>Admin:deactivated
 
   Connector q->>Connector fn:message(delete)
   activate Connector fn
@@ -137,9 +108,109 @@ sequenceDiagram
   deactivate MAC
 ```
 
-### Incremental crawl
+### Scheduled crawl
+
+```mermaid
+sequenceDiagram
+  participant Timer
+  participant Content timer fn
+  participant Content q
+  
+  activate Timer
+  activate Content q
+
+  Timer->>Content timer fn:onTimer
+  activate Content timer fn
+  Content timer fn->>Content q:message(crawl, incremental)
+  Content q-->>Content timer fn:response(201 Created)
+  deactivate Content timer fn
+
+  deactivate Content q
+  deactivate Timer
+```
 
 ### On-demand crawl
+
+```mermaid
+sequenceDiagram
+  actor User
+  participant Content HTTP trigger fn
+  participant Content q
+  
+  activate Content q
+
+  User->>Content HTTP trigger fn:crawl(type)
+  activate Content HTTP trigger fn
+  alt type=full
+    Content HTTP trigger fn->>Content q:message(crawl, full)
+    Content q-->>Content HTTP trigger fn:response(201 Created)
+  else type=incremental
+    Content HTTP trigger fn->>Content q:message(crawl, incremental)
+    Content q-->>Content HTTP trigger fn:response(201 Created)
+  end
+  Content HTTP trigger fn-->>User:response(202 Accepted)
+  deactivate Content HTTP trigger fn
+  
+  deactivate Content q
+```
+
+### Crawl
+
+```mermaid
+sequenceDiagram
+  participant Content q
+  participant Content fn
+  participant Content storage
+  participant Graph
+  participant External content
+  
+  activate Content q
+  activate Content storage
+  activate Graph
+  activate External content
+
+  alt message=crawl
+    Content q->>Content fn:message(crawl, type)
+    activate Content fn
+    alt type=full
+      Content fn->>External content:getContent
+      External content-->>Content fn:content
+    else type=incremental
+      Content fn->>Content storage:getLatestItemDate
+      Content storage-->>Content fn:response(latestItemDate)
+      Content fn->>External content:getContent(latestItemDate)
+      External content-->>Content fn:content
+    end
+    
+    loop each content item
+      Content fn->>Content q:message(item, item)
+      Content q-->>Content fn:response(201 Created)
+    end
+    deactivate Content fn
+  else message=item
+    Content q->>Content fn:message(item, item)
+    activate Content fn
+    Content fn->>External content:getContent(item)
+    External content-->>Content fn:content(item)
+    Content fn->>Content fn:transform(item)
+    Content fn->>Graph:externalItem(item)
+    Graph-->>Content fn:response(200 OK)
+
+    Content fn->>Content storage:getLatestItemDate
+    Content storage-->>Content fn:response(latestItemDate)
+
+    alt latestItemDate<itemDate
+      Content fn->>Content storage:updateLatestItemDate(itemDate)
+      Content storage-->>Content fn:response(204 No Content)
+    end
+    deactivate Content fn
+  end
+  
+  deactivate External content
+  deactivate Graph
+  deactivate Content q
+  deactivate Content storage
+```
 
 ## Test function
 

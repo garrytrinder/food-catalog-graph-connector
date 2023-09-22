@@ -10,11 +10,11 @@
       "resourceAccess": [
         {
           "id": "ExternalConnection.ReadWrite.OwnedBy",
-          "type": "Scope"
+          "type": "Role"
         },
         {
           "id": "ExternalItem.ReadWrite.OwnedBy",
-          "type": "Scope"
+          "type": "Role"
         }
       ]
     }

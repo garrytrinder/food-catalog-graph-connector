@@ -32,8 +32,8 @@
       "label": "TTK",
       "dependsOn": [
         "Start local tunnel",
-        "Start Azurite emulator",
-        "Provision"
+        "Provision",
+        "Start Azurite emulator"
       ],
       "dependsOrder": "sequence"
     },

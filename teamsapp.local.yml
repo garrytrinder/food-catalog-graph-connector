@@ -6,6 +6,11 @@ version: 1.0.0
 environmentFolderPath: ./env
 
 provision:
+
+  - uses: cli/runNpmCommand
+    with:
+      args: install --no-audit
+
   - uses: teamsApp/create
     with:
       name: ${{APP_NAME}}-${{TEAMSFX_ENV}}

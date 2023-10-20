@@ -12,9 +12,10 @@
     {
       "type": "shell",
       "label": "npm build (functions)",
-      "command": "npm run build",
+      "command": "npm run watch",
       "dependsOn": "npm install (functions)",
-      "problemMatcher": "$tsc"
+      "isBackground": true,
+      "problemMatcher": "$tsc-watch"
     },
     {
       "type": "shell",

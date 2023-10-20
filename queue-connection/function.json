@@ -1,0 +1,11 @@
+{
+  "bindings": [
+    {
+      "name": "queue-connection",
+      "type": "queueTrigger",
+      "direction": "in",
+      "queueName": "queue-connection"
+    }
+  ],
+  "scriptFile": "../dist/queue-connection/index.js"
+}

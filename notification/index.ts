@@ -17,8 +17,8 @@ const httpTrigger: AzureFunction = async function (
     status: 202
   };
 
-  const tenantId = process.env.TenantId;
-  const clientId = process.env.ClientId;
+  const tenantId = process.env.AAD_APP_TENANT_ID;
+  const clientId = process.env.AAD_APP_CLIENT_ID;
 
   const token = req.body?.validationTokens[0];
   await validateToken(token, tenantId, clientId);
@@ -43,7 +43,8 @@ const httpTrigger: AzureFunction = async function (
   }
 
   const queueClient = await getQueueClient('queue-connection');
-  await queueClient.sendMessage(JSON.stringify(message));
+  // must base64 encode
+  await queueClient.sendMessage(btoa(JSON.stringify(message)));
 };
 
 export default httpTrigger;

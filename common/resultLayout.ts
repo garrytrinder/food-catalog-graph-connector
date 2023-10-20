@@ -1,4 +1,4 @@
-{
+export const resultLayout = {
   "type": "AdaptiveCard",
   "version": "1.3",
   "body": [

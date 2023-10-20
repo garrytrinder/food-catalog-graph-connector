@@ -6,11 +6,11 @@ import { ConnectionMessage } from '../common/ConnectionMessage';
 import { config } from '../common/config';
 import { client } from '../common/graphClient';
 import { enqueueCheckStatus, startFullCrawl } from '../common/queueClient';
+import { resultLayout } from '../common/resultLayout';
 
 async function createConnection(connectorId: string, connectorTicket: string) {
     const { id, name, description, activitySettings, searchSettings } = config.connector;
-    const adaptiveCard = fs.readFileSync('./resultLayout.json', 'utf8');
-    searchSettings.searchResultTemplates[0].layout = JSON.parse(adaptiveCard);
+    searchSettings.searchResultTemplates[0].layout = resultLayout;
 
     await client
         .api('/external/connections')
@@ -62,9 +62,7 @@ async function deleteConnection() {
         .delete();
 }
 
-const queueTrigger: AzureFunction = async function (context: Context, myQueueItem: any): Promise<void> {
-    const message: ConnectionMessage = JSON.parse(myQueueItem);
-
+const queueTrigger: AzureFunction = async function (context: Context, message: ConnectionMessage): Promise<void> {
     switch (message.action) {
         case 'create':
             await createConnection(message.connectorId, message.connectorTicket);

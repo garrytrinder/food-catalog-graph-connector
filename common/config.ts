@@ -1,20 +1,20 @@
 export const config = {
   connector: {
     // 3-32 characters
-    id: 'waldekblog',
-    name: 'Waldek Mastykarz (blog)',
-    description: 'Tips and best practices for building applications on Microsoft 365 by Waldek Mastykarz - Microsoft 365 Cloud Developer Advocate',
+    id: 'foodstore',
+    name: 'Food store',
+    description: '',
     activitySettings: {
       urlToItemResolvers: [
         {
           '@odata.type': '#microsoft.graph.externalConnectors.itemIdResolver',
           urlMatchInfo: {
             baseUrls: [
-              'https://blog.mastykarz.nl'
+              'https://world.openfoodfacts.org'
             ],
-            urlPattern: '/(?<slug>[^/]+)'
+            urlPattern: '/product/(?<productId>[^/]+)/.*'
           },
-          itemId: '{slug}',
+          itemId: '{productId}',
           priority: 1
         }
       ]
@@ -22,7 +22,7 @@ export const config = {
     searchSettings: {
       searchResultTemplates: [
         {
-          id: 'waldekblog',
+          id: 'foodstore',
           priority: 1,
           layout: {}
         }

@@ -2,7 +2,7 @@ import { QueueServiceClient } from '@azure/storage-queue';
 import { ConnectionMessage } from './ConnectionMessage';
 
 export async function getQueueClient(queueName: string) {
-  const connectionString = 'UseDevelopmentStorage=true';
+  const connectionString = process.env.STORAGE_CONN_STRING;
   const queueServiceClient = QueueServiceClient.fromConnectionString(connectionString);
   await queueServiceClient.createQueue(queueName);
   return queueServiceClient.getQueueClient(queueName);

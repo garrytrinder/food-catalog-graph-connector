@@ -3,9 +3,9 @@ import { Client } from '@microsoft/microsoft-graph-client';
 import { TokenCredentialAuthenticationProvider } from '@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials/index.js';
 
 const credential = new ClientSecretCredential(
-  process.env.TenantId,
-  process.env.ClientId,
-  process.env.ClientSecret
+  process.env.AAD_APP_TENANT_ID,
+  process.env.AAD_APP_CLIENT_ID,
+  process.env.AAD_APP_CLIENT_SECRET
 );
 
 const authProvider = new TokenCredentialAuthenticationProvider(credential, {

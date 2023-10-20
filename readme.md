@@ -224,3 +224,36 @@ sequenceDiagram
  - Create new queue called `queue-connection`
  - Create new queue called `queue-content`
  - Create message in queue
+
+### Products API
+
+List products
+
+```
+GET /api/products
+```
+Get product by ID
+
+```
+GET /api/product?id={id}
+```
+
+Create product
+
+```
+POST api/products
+{"product_name":"New product"}
+```
+
+Update product
+
+```
+PATCH api/products?id={id}
+{"product_name":"New product"}
+```
+
+Delete product
+
+```
+DELETE api/products?id={id}
+```

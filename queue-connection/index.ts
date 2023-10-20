@@ -1,7 +1,6 @@
 import { AzureFunction, Context } from '@azure/functions';
 import { ResponseType } from '@microsoft/microsoft-graph-client';
 import { ExternalConnectors } from '@microsoft/microsoft-graph-types';
-import * as fs from 'fs';
 import { ConnectionMessage } from '../common/ConnectionMessage';
 import { config } from '../common/config';
 import { client } from '../common/graphClient';

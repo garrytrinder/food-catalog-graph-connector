@@ -4,7 +4,7 @@ Sample project that uses Teams Toolkit to simplify the process of creating a [Mi
 
 Sample data is taken from [Open Food Facts API](https://openfoodfacts.github.io/openfoodfacts-server/api/).
 
-## Prerequisities
+## Prerequisites
 
  - [Azure Function Core Tools v4](https://learn.microsoft.com/azure/azure-functions/functions-run-local)
  - Teams Toolkit for Visual Studio Code

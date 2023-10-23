@@ -32,33 +32,10 @@
     {
       "label": "TTK",
       "dependsOn": [
-        "Start local tunnel",
         "Provision",
         "Start Azurite emulator"
       ],
       "dependsOrder": "sequence"
-    },
-    {
-      "label": "Start local tunnel",
-      "type": "teamsfx",
-      "command": "debug-start-local-tunnel",
-      "args": {
-        "type": "dev-tunnel",
-        "ports": [
-          {
-            "portNumber": 7071,
-            "protocol": "http",
-            "access": "public",
-            "writeToEnvironmentFile": {
-              "endpoint": "NOTIFICATION_ENDPOINT",
-              "domain": "NOTIFICATION_DOMAIN"
-            }
-          }
-        ],
-        "env": "local"
-      },
-      "isBackground": true,
-      "problemMatcher": "$teamsfx-local-tunnel-watch"
     },
     {
       "label": "Start Azurite emulator",

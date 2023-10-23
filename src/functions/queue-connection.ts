@@ -1,11 +1,17 @@
-import { AzureFunction, Context } from '@azure/functions';
-import { ResponseType } from '@microsoft/microsoft-graph-client';
-import { ExternalConnectors } from '@microsoft/microsoft-graph-types';
-import { ConnectionMessage } from '../common/ConnectionMessage';
-import { config } from '../common/config';
-import { client } from '../common/graphClient';
-import { enqueueCheckStatus, startFullCrawl } from '../common/queueClient';
-import { resultLayout } from '../common/resultLayout';
+import { app, InvocationContext } from "@azure/functions";
+import { ResponseType } from "@microsoft/microsoft-graph-client";
+import { ExternalConnectors } from "@microsoft/microsoft-graph-types";
+import { config } from "../common/config";
+import { client } from "../common/graphClient";
+import { enqueueCheckStatus, startFullCrawl } from "../common/queueClient";
+import { resultLayout } from "../common/resultLayout";
+
+type QueueConnectionMessage = {
+    action: 'create' | 'delete' | 'status';
+    connectorId?: string;
+    connectorTicket?: string;
+    location?: string;
+}
 
 async function createConnection(connectorId: string, connectorTicket: string) {
     const { id, name, description, activitySettings, searchSettings } = config.connector;
@@ -61,21 +67,25 @@ async function deleteConnection() {
         .delete();
 }
 
-const queueTrigger: AzureFunction = async function (context: Context, message: ConnectionMessage): Promise<void> {
-    switch (message.action) {
-        case 'create':
-            await createConnection(message.connectorId, message.connectorTicket);
-            createSchema();
-            break;
-        case 'delete':
-            await deleteConnection();
-            break;
-        case 'status':
-            await checkSchemaStatus(message.location);
-            break;
-        default:
-            break;
-    }
-};
+app.storageQueue("connectionQueue", {
+    connection: "AzureWebJobsStorage",
+    queueName: "queue-connection",
+    handler: async (message: QueueConnectionMessage, context: InvocationContext) => {
+        const { action, connectorId, connectorTicket, location } = message;
 
-export default queueTrigger;
+        switch (action) {
+            case 'create':
+                await createConnection(connectorId, connectorTicket);
+                createSchema();
+                break;
+            case 'delete':
+                await deleteConnection();
+                break;
+            case 'status':
+                await checkSchemaStatus(location);
+                break;
+            default:
+                break;
+        }
+    }
+})

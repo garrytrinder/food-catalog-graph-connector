@@ -237,15 +237,15 @@ sequenceDiagram
 
 ### Products API
 
-List products
+Get products
 
 ```
 GET /api/products
 ```
-Get product by ID
+Get product
 
 ```
-GET /api/product?id={id}
+GET /api/product/{id}
 ```
 
 Create product
@@ -258,12 +258,12 @@ POST api/products
 Update product
 
 ```
-PATCH api/products?id={id}
-{"product_name":"New product"}
+PATCH api/products/{id}
+{"product_name":"Updated product name"}
 ```
 
 Delete product
 
 ```
-DELETE api/products?id={id}
+DELETE api/products/{id}
 ```

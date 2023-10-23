@@ -2,6 +2,7 @@
   "name": "food-catalog-graph-connector",
   "version": "1.0.0",
   "description": "",
+  "main": "dist/src/functions/*.js",
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
@@ -11,10 +12,10 @@
     "test": "echo \"No tests yet...\""
   },
   "devDependencies": {
-    "@azure/functions": "3.5.1",
+    "@azure/functions": "4.0.1",
     "@microsoft/microsoft-graph-types": "^2.38.0",
     "@types/node": "18.17.18",
-    "azure-functions-core-tools": "4.0.5348",
+    "azure-functions-core-tools": "4.0.5413",
     "azurite": "3.26.0",
     "typescript": "5.2.2"
   },

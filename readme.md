@@ -6,23 +6,23 @@ Sample data is taken from [Open Food Facts API](https://openfoodfacts.github.io/
 
 ## Prerequisites
 
- - [Azure Function Core Tools v4](https://learn.microsoft.com/azure/azure-functions/functions-run-local)
- - [Dev Tunnels CLI](https://learn.microsoft.com/azure/developer/dev-tunnels/get-started#install)
- - Teams Toolkit for Visual Studio Code
- - Microsoft 365 tenant with [uploading custom apps enabled](https://learn.microsoft.com/microsoftteams/platform/m365-apps/prerequisites#prepare-a-developer-tenant-for-testing)
+- [Azure Function Core Tools v4](https://learn.microsoft.com/azure/azure-functions/functions-run-local)
+- [Dev Tunnels CLI](https://learn.microsoft.com/azure/developer/dev-tunnels/get-started#install)
+- Teams Toolkit for Visual Studio Code
+- Microsoft 365 tenant with [uploading custom apps enabled](https://learn.microsoft.com/microsoftteams/platform/m365-apps/prerequisites#prepare-a-developer-tenant-for-testing)
 
- ## Get started
+## Get started
 
- - Create permanent dev tunnel, `devtunnel create`, take note of the tunnel id or name
- - Create dev tunnel port, `devtunnel port create <tunnel-id-or-name> -p 7071`
- - Open port, `devtunnel access create <tunnel-id-or-name> -p 7071 -a`
- - Start tunnel, `devtunnel host <tunnel-id-or-name>`, take note of the tunnel URL shown in output
- - Clone repo
- - Open repo in VSCode
- - Update `env/.env.local`
-   - Set `NOTIFICATION_ENDPOINT` to the tunnel URL
-   - Set `NOTIFICATION_DOMAIN` to the tunnel URL without `https://`
- - Press `F5`
+- Create permanent dev tunnel, `devtunnel create`, take note of the tunnel id or name
+- Create dev tunnel port, `devtunnel port create <tunnel-id-or-name> -p 7071`
+- Open port, `devtunnel access create <tunnel-id-or-name> -p 7071 -a`
+- Start tunnel, `devtunnel host <tunnel-id-or-name>`, take note of the tunnel URL shown in output
+- Clone repo
+- Open repo in VSCode
+- Update `env/.env.local`
+  - Set `NOTIFICATION_ENDPOINT` to the tunnel URL
+  - Set `NOTIFICATION_DOMAIN` to the tunnel URL without `https://`
+- Press `F5`
 
 ## Architecture
 

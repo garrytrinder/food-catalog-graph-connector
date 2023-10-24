@@ -7,7 +7,7 @@ Sample data is taken from [Open Food Facts API](https://openfoodfacts.github.io/
 ## Prerequisites
 
  - [Azure Function Core Tools v4](https://learn.microsoft.com/azure/azure-functions/functions-run-local)
- - [Dev Tunnels CLI](https://learn.microsoft.com/azure/developer/dev-tunnels/)
+ - [Dev Tunnels CLI](https://learn.microsoft.com/azure/developer/dev-tunnels/get-started#install)
  - Teams Toolkit for Visual Studio Code
  - Microsoft 365 tenant with [uploading custom apps enabled](https://learn.microsoft.com/microsoftteams/platform/m365-apps/prerequisites#prepare-a-developer-tenant-for-testing)
 

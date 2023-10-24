@@ -13,6 +13,7 @@ Sample data is taken from [Open Food Facts API](https://openfoodfacts.github.io/
 
 ## Get started
 
+- Login to dev tunnels, `devtunnel user login`
 - Create permanent dev tunnel, `devtunnel create`, take note of the tunnel id or name
 - Create dev tunnel port, `devtunnel port create <tunnel-id-or-name> -p 7071`
 - Open port, `devtunnel access create <tunnel-id-or-name> -p 7071 -a`

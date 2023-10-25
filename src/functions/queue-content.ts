@@ -44,7 +44,7 @@ async function processItem(itemId: string, itemAction: ItemAction) {
             'traces@odata.type': 'Collection(String)',
             traces: product.traces_tags.replace(/en:/g, '').split(', '),
             name: product.product_name,
-            url: product.url
+            url: product.url.replace('.net/', '.org/')
         },
         content: {
             content: product.product_name,

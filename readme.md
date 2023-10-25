@@ -228,14 +228,6 @@ sequenceDiagram
  - Go to `Start local tunnel` terminal window to discover forwarding URL e.g. `https://<tunnelid>-7071.<region>.devtunnels.ms`
  - `curl https://<tunnelid>-7071.<region>.devtunnels.ms/api/notification`
 
-### Queue
-
- - Open Microsoft Azure Storage Explorer
- - Expand `Emulated & Attached` > `Emulator Default Ports` > `Queues`
- - Create new queue called `queue-connection`
- - Create new queue called `queue-content`
- - Create message in queue
-
 ### Products API
 
 Get products

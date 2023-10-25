@@ -7,6 +7,15 @@ const path = require("path");
     const { products } = JSON.parse(jsonString);
 
     const tableServiceClient = TableServiceClient.fromConnectionString("UseDevelopmentStorage=true");
+    let tables = [];
+    for await (const table of tableServiceClient.listTables()) {
+        tables.push(table.name);
+    }
+    if (tables.includes('products')) {
+        console.log('Table already exists');
+        return;
+    }
+
     await tableServiceClient.createTable('products');
     const tableClient = TableClient.fromConnectionString("UseDevelopmentStorage=true", 'products');
 

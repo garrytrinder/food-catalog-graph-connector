@@ -10,6 +10,12 @@ provision:
   - uses: cli/runNpmCommand
     with:
       args: install --no-audit
+  
+  - uses: script
+    name: Ensure tables and data
+    with:
+      run: node db.js
+      workingDirectory: scripts
 
   - uses: script
     name: Increment manifest version

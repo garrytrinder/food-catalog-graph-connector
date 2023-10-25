@@ -1,5 +1,6 @@
 import { QueueServiceClient } from '@azure/storage-queue';
 import { ConnectionMessage } from './ConnectionMessage';
+import { ContentMessage } from './ContentMessage';
 
 export async function getQueueClient(queueName: string) {
   const connectionString = process.env.AzureWebJobsStorage;
@@ -20,9 +21,19 @@ export async function enqueueCheckStatus(location: string) {
 
 export async function startFullCrawl() {
   const queueClient = await getQueueClient('queue-content');
-  const message = {
+  const message: ContentMessage = {
     action: 'crawl',
-    crawl: 'full'
+    crawlType: 'full'
+  }
+  await queueClient.sendMessage(btoa(JSON.stringify(message)));
+}
+
+export async function enqueueItemUpdate(itemId: string) {
+  const queueClient = await getQueueClient('queue-content');
+  const message: ContentMessage = {
+    action: 'item',
+    itemAction: 'update',
+    itemId
   }
   await queueClient.sendMessage(btoa(JSON.stringify(message)));
 }

@@ -7,13 +7,13 @@ app.http('getProducts', {
     methods: ['GET'],
     route: 'products',
     handler: async () => {
-        let products = [];
-        const tableClient = getTableClient('products');
+        const products: Product[] = [];
+        const tableClient = await getTableClient('products');
         const entities = tableClient.listEntities();
         for await (const entity of entities) {
             products.push({
                 id: entity.rowKey,
-                last_modified: entity.last_modified_t
+                last_modified: entity.last_modified_t as any
             });
         }
 
@@ -34,8 +34,21 @@ app.http('getProduct', {
         const { id } = request.params;
 
         try {
-            const tableClient = getTableClient('products');
-            const product = await tableClient.getEntity('products', id);
+            const tableClient = await getTableClient('products');
+            const productEntity = await tableClient.getEntity('products', id);
+            delete productEntity.partitionKey;
+            delete productEntity.timestamp;
+            delete productEntity.etag;
+            delete productEntity['odata.metadata'];
+
+            const product: Product = {
+                id: productEntity.rowKey,
+                last_modified: productEntity.last_modified_t as any,
+                ...productEntity
+            };
+            delete (product as any).rowKey;
+            delete (product as any).last_modified_t;
+            
             return {
                 status: 200,
                 body: JSON.stringify(product, null, 2),
@@ -55,7 +68,7 @@ app.http('createProduct', {
         const { body } = request;
 
         try {
-            const tableClient = getTableClient('products');
+            const tableClient = await getTableClient('products');
             const newProduct = {
                 partitionKey: "products",
                 rowKey: randomUUID().replace(/-|[a-z]/g, ''),
@@ -81,7 +94,7 @@ app.http('updateProduct', {
         const { id } = request.params;
         const { body } = request;
         try {
-            const tableClient = getTableClient('products');
+            const tableClient = await getTableClient('products');
             const product = await tableClient.getEntity("products", id);
             await tableClient.updateEntity({ ...product, ...await streamToJson(body), last_modified_t: Date.now(), }, "Merge");
             return {
@@ -101,7 +114,7 @@ app.http('deleteProduct', {
     handler: async (request: HttpRequest) => {
         const { id } = request.params;
         try {
-            const tableClient = getTableClient('products');
+            const tableClient = await getTableClient('products');
             await tableClient.getEntity("products", id);
             await tableClient.deleteEntity('products', id);
             return {

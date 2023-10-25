@@ -5,13 +5,7 @@ import { config } from "../common/config";
 import { client } from "../common/graphClient";
 import { enqueueCheckStatus, startFullCrawl } from "../common/queueClient";
 import { resultLayout } from "../common/resultLayout";
-
-type QueueConnectionMessage = {
-    action: 'create' | 'delete' | 'status';
-    connectorId?: string;
-    connectorTicket?: string;
-    location?: string;
-}
+import { ConnectionMessage } from "../common/ConnectionMessage";
 
 async function createConnection(connectorId: string, connectorTicket: string) {
     const { id, name, description, activitySettings, searchSettings } = config.connector;
@@ -70,7 +64,7 @@ async function deleteConnection() {
 app.storageQueue("connectionQueue", {
     connection: "AzureWebJobsStorage",
     queueName: "queue-connection",
-    handler: async (message: QueueConnectionMessage, context: InvocationContext) => {
+    handler: async (message: ConnectionMessage, context: InvocationContext) => {
         const { action, connectorId, connectorTicket, location } = message;
 
         switch (action) {

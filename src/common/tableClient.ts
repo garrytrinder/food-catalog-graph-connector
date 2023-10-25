@@ -1,5 +1,17 @@
-import { TableClient } from "@azure/data-tables";
+import { TableClient, TableServiceClient } from "@azure/data-tables";
 
-export function getTableClient(tableName: string) {
-    return TableClient.fromConnectionString(process.env.AzureWebJobsStorage, tableName);
+export async function getTableClient(tableName: string) {
+    const connectionString = process.env.AzureWebJobsStorage;
+    const tableServiceClient = TableServiceClient.fromConnectionString(connectionString);
+    await tableServiceClient.createTable(tableName);
+    return TableClient.fromConnectionString(connectionString, tableName);
+}
+
+export async function addItem(itemId: string) {
+    const tableClient = await getTableClient('externalitems');
+    const entity = {
+        partitionKey: 'products',
+        rowKey: itemId
+    }
+    await tableClient.createEntity(entity);
 }

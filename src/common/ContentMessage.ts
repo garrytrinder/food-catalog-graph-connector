@@ -1,5 +1,10 @@
+export type CrawlType = 'full' | 'incremental';
+
+export type ItemAction = 'update' | 'delete';
+
 export interface ContentMessage {
   action?: 'crawl' | 'item';
-  crawl?: 'full' | 'incremental';
+  crawlType?: CrawlType;
+  itemAction?: ItemAction;
   itemId?: string;
 }

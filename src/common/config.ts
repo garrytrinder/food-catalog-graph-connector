@@ -3,7 +3,7 @@ export const config = {
     // 3-32 characters
     id: 'foodstore',
     name: 'Food store',
-    description: '',
+    description: 'Contains information about food products, such as their name, ingredients, nutrition facts, and allergens.',
     activitySettings: {
       urlToItemResolvers: [
         {
@@ -31,7 +31,7 @@ export const config = {
     // https://learn.microsoft.com/graph/connecting-external-content-manage-schema
     schema: [
       {
-        name: 'title',
+        name: 'name',
         type: 'String',
         isQueryable: 'true',
         isSearchable: 'true',
@@ -41,15 +41,41 @@ export const config = {
         ]
       },
       {
-        name: 'excerpt',
-        type: 'String',
+        name: 'categories',
+        type: 'StringCollection',
         isQueryable: 'true',
         isSearchable: 'true',
         isRetrievable: 'true'
       },
       {
+        name: 'ecoscore',
+        type: 'String',
+        isQueryable: 'true',
+        isRetrievable: 'true'
+      },
+      {
         name: 'imageUrl',
         type: 'String',
+        isRetrievable: 'true'
+      },
+      {
+        name: 'ingredients',
+        type: 'StringCollection',
+        isQueryable: 'true',
+        isSearchable: 'true',
+        isRetrievable: 'true'
+      },
+      {
+        name: 'nutriscore',
+        type: 'String',
+        isQueryable: 'true',
+        isRetrievable: 'true'
+      },
+      {
+        name: 'traces',
+        type: 'StringCollection',
+        isQueryable: 'true',
+        isSearchable: 'true',
         isRetrievable: 'true'
       },
       {
@@ -59,23 +85,6 @@ export const config = {
         labels: [
           'url'
         ]
-      },
-      {
-        name: 'date',
-        type: 'DateTime',
-        isQueryable: 'true',
-        isRetrievable: 'true',
-        isRefinable: 'true',
-        labels: [
-          'lastModifiedDateTime'
-        ]
-      },
-      {
-        name: 'tags',
-        type: 'StringCollection',
-        isQueryable: 'true',
-        isRetrievable: 'true',
-        isRefinable: 'true'
       }
     ]
   }

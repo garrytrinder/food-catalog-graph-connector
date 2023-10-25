@@ -11,7 +11,10 @@ app.http('getProducts', {
         const tableClient = getTableClient('products');
         const entities = tableClient.listEntities();
         for await (const entity of entities) {
-            products.push(entity);
+            products.push({
+                id: entity.rowKey,
+                last_modified: entity.last_modified_t
+            });
         }
 
         return {

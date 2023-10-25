@@ -6,10 +6,6 @@ version: 1.0.0
 environmentFolderPath: ./env
 
 provision:
-
-  - uses: cli/runNpmCommand
-    with:
-      args: install --no-audit
   
   - uses: script
     name: Ensure tables and data

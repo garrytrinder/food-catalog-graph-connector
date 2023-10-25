@@ -20,7 +20,7 @@
     {
       "type": "shell",
       "label": "npm install (functions)",
-      "command": "npm install"
+      "command": "npm install --no-audit"
     },
     {
       "type": "shell",
@@ -32,8 +32,9 @@
     {
       "label": "TTK",
       "dependsOn": [
+        "npm install (functions)",
+        "Start Azurite emulator",
         "Provision",
-        "Start Azurite emulator"
       ],
       "dependsOrder": "sequence"
     },

@@ -14,9 +14,10 @@ Sample data is taken from [Open Food Facts API](https://openfoodfacts.github.io/
 ## Get started
 
 - Login to dev tunnels, `devtunnel user login`
-- Create permanent dev tunnel, `devtunnel create`, take note of the tunnel id or name
-- Create dev tunnel port, `devtunnel port create <tunnel-id-or-name> -p 7071`
-- Open port, `devtunnel access create <tunnel-id-or-name> -p 7071 -a`
+- First run:
+  - Create permanent dev tunnel, `devtunnel create`, take note of the tunnel id or name
+  - Create dev tunnel port, `devtunnel port create <tunnel-id-or-name> -p 7071`
+  - Open port, `devtunnel access create <tunnel-id-or-name> -p 7071 -a`
 - Start tunnel, `devtunnel host <tunnel-id-or-name>`, take note of the tunnel URL shown in output
 - Clone repo
 - Open repo in VSCode
@@ -32,26 +33,26 @@ Sample data is taken from [Open Food Facts API](https://openfoodfacts.github.io/
 ```mermaid
 sequenceDiagram
   actor Admin
-  participant MAC
+  participant TAC
   participant Webhook fn
   participant Connector q
   participant Connector fn
   participant Content q
   participant Graph
   
-  activate MAC
+  activate TAC
   activate Connector q
   activate Content q
   activate Graph
 
-  Admin->>MAC:Activate connector
-  MAC->>Webhook fn:Webhook(state)
+  Admin->>TAC:Activate connector
+  TAC->>Webhook fn:Webhook(state)
   activate Webhook fn
   Webhook fn->>Connector q:message(create, id, ticket)
   Connector q-->>Webhook fn:response(201 Created)
-  Webhook fn-->>MAC:response(202 Accepted)
+  Webhook fn-->>TAC:response(202 Accepted)
   deactivate Webhook fn
-  MAC-->>Admin:activated
+  TAC-->>Admin:activated
 
   alt message=create
     Connector q->>Connector fn:message(create, id, ticket)
@@ -81,7 +82,7 @@ sequenceDiagram
   deactivate Graph
   deactivate Content q
   deactivate Connector q
-  deactivate MAC
+  deactivate TAC
 ```
 
 ### Deactivating connector
@@ -89,24 +90,24 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
   actor Admin
-  participant MAC
+  participant TAC
   participant Webhook fn
   participant Connector q
   participant Connector fn
   participant Graph
   
-  activate MAC
+  activate TAC
   activate Connector q
   activate Graph
 
-  Admin->>MAC:Deactivate connector
-  MAC->>Webhook fn:Webhook(state)
+  Admin->>TAC:Deactivate connector
+  TAC->>Webhook fn:Webhook(state)
   activate Webhook fn
   Webhook fn->>Connector q:message(delete)
   Connector q-->>Webhook fn:response(201 Created)
-  Webhook fn-->>MAC:response(202 Accepted)
+  Webhook fn-->>TAC:response(202 Accepted)
   deactivate Webhook fn
-  MAC-->>Admin:deactivated
+  TAC-->>Admin:deactivated
 
   Connector q->>Connector fn:message(delete)
   activate Connector fn
@@ -116,7 +117,7 @@ sequenceDiagram
   
   deactivate Graph
   deactivate Connector q
-  deactivate MAC
+  deactivate TAC
 ```
 
 ### Scheduled crawl
@@ -225,38 +226,41 @@ sequenceDiagram
 
 ## Test function
 
- - Go to `Start local tunnel` terminal window to discover forwarding URL e.g. `https://<tunnelid>-7071.<region>.devtunnels.ms`
- - `curl https://<tunnelid>-7071.<region>.devtunnels.ms/api/notification`
+- Go to `Start local tunnel` terminal window to discover forwarding URL e.g. `https://<tunnelid>-7071.<region>.devtunnels.ms`
+- `curl https://<tunnelid>-7071.<region>.devtunnels.ms/api/notification`
 
 ### Products API
 
 Get products
 
-```
+```http
 GET /api/products
 ```
+
 Get product
 
-```
+```http
 GET /api/product/{id}
 ```
 
 Create product
 
-```
+```http
 POST api/products
+
 {"product_name":"New product"}
 ```
 
 Update product
 
-```
+```http
 PATCH api/products/{id}
+
 {"product_name":"Updated product name"}
 ```
 
 Delete product
 
-```
+```http
 DELETE api/products/{id}
 ```

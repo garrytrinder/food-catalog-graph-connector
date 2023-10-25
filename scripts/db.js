@@ -20,11 +20,33 @@ const path = require("path");
     const tableClient = TableClient.fromConnectionString("UseDevelopmentStorage=true", 'products');
 
     const rows = products.map(product => {
-        const { _id: rowKey, product_name, last_modified_t } = product;
+        let {
+            _id: rowKey,
+            categories_hierarchy,
+            ecoscore_grade,
+            image_url,
+            ingredients_text_en: ingredients_text,
+            last_modified_t,
+            nutriscore_grade,
+            product_name,
+            traces_tags,
+            url
+        } = product;
+
+        traces_tags = traces_tags.join(', ');
+        const categories = categories_hierarchy.join(', ');
+
         return {
             rowKey,
+            categories,
+            ecoscore_grade,
+            image_url,
+            ingredients_text,
+            last_modified_t,
+            nutriscore_grade,
             product_name,
-            last_modified_t
+            traces_tags,
+            url
         }
     });
 

@@ -13,30 +13,30 @@ export async function getTableClient(tableName: string) {
 }
 
 export async function addItem(itemId: string, context: InvocationContext) {
-    context.debug(`Getting table client for externalitems...`);
+    context.log(`Getting table client for externalitems...`);
     const tableClient = await getTableClient('externalitems');
     const entity = {
         partitionKey: 'products',
         rowKey: itemId
     }
 
-    context.debug(`Upserting entity ${JSON.stringify(entity, null, 2)}...`);
+    context.log(`Upserting entity ${JSON.stringify(entity, null, 2)}...`);
     await tableClient.upsertEntity(entity);
 }
 
 export async function recordLastModified(lastModifiedDate: number, context: InvocationContext) {
-    context.debug(`Getting table client for state...`);
+    context.log(`Getting table client for state...`);
     const tableClient = await getTableClient('state');
     let lastModified
     try {
-        context.debug(`Getting entity lastModified...`);
+        context.log(`Getting entity lastModified...`);
         lastModified = await tableClient.getEntity<StateRecord>('state', 'lastModified');
     }
     catch (e) {
-        context.debug(`Error getting entity lastModified: ${e.message}`);
+        context.log(`Error getting entity lastModified: ${e.message}`);
     }
     if (lastModified && lastModified.date > lastModifiedDate) {
-        context.debug(`Last modified date ${lastModified.date} is newer than ${lastModifiedDate}`);
+        context.log(`Last modified date ${lastModified.date} is newer than ${lastModifiedDate}`);
         // we've got a newer record already
         return;
     }
@@ -46,6 +46,22 @@ export async function recordLastModified(lastModifiedDate: number, context: Invo
         rowKey: 'lastModified',
         date: lastModifiedDate
     };
-    context.debug(`Upserting entity ${JSON.stringify(entity, null, 2)}...`);
+    context.log(`Upserting entity ${JSON.stringify(entity, null, 2)}...`);
     await tableClient.upsertEntity(entity);
+}
+
+export async function getLastModified(context: InvocationContext) {
+    context.log(`Getting table client for state...`);
+    const tableClient = await getTableClient('state');
+    let lastModified
+    try {
+        context.log(`Getting entity lastModified...`);
+        lastModified = await tableClient.getEntity<StateRecord>('state', 'lastModified');
+        context.log(`Got lastModified: ${JSON.stringify(lastModified, null, 2)}`);
+        return lastModified.date;
+    }
+    catch (e) {
+        context.log(`Error getting entity lastModified: ${e.message}. Returning 0`);
+        return 0;
+    }
 }

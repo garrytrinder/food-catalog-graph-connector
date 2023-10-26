@@ -6,15 +6,26 @@ import { streamToJson } from "../common/utils";
 app.http('getProducts', {
     methods: ['GET'],
     route: 'products',
-    handler: async () => {
+    handler: async (request: HttpRequest) => {
+        const filter = request.query.get('$filter');
+        const select = request.query.get('$select')?.split(',') ?? ['rowKey', 'last_modified_t'];
+
         const products: Product[] = [];
         const tableClient = await getTableClient('products');
-        const entities = tableClient.listEntities();
+        const entities = tableClient.listEntities({
+            queryOptions: {
+                filter,
+                select
+            }
+        });
         for await (const entity of entities) {
-            products.push({
+            const product: Product = {
                 id: entity.rowKey,
-                last_modified: entity.last_modified_t as any
-            });
+                ...entity
+            };
+            delete (product as any).etag;
+            delete (product as any).rowKey;
+            products.push(product);
         }
 
         return {
@@ -43,11 +54,9 @@ app.http('getProduct', {
 
             const product: Product = {
                 id: productEntity.rowKey,
-                last_modified: productEntity.last_modified_t as any,
                 ...productEntity
             };
             delete (product as any).rowKey;
-            delete (product as any).last_modified_t;
             
             return {
                 status: 200,
@@ -96,7 +105,7 @@ app.http('updateProduct', {
         try {
             const tableClient = await getTableClient('products');
             const product = await tableClient.getEntity("products", id);
-            await tableClient.updateEntity({ ...product, ...await streamToJson(body), last_modified_t: Date.now(), }, "Merge");
+            await tableClient.updateEntity({ ...product, ...await streamToJson(body), last_modified_t: Math.floor(Date.now() / 1000), }, "Merge");
             return {
                 status: 200
             }

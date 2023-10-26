@@ -4,7 +4,7 @@ interface Product {
   ecoscore_grade?: string;
   image_url?: string;
   ingredients_text?: string;
-  last_modified: number;
+  last_modified_t?: number;
   nutriscore_grade?: string;
   product_name?: string;
   traces_tags?: string;

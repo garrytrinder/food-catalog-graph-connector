@@ -13,14 +13,14 @@ app.http('notification', {
     methods: ['POST'],
     handler: async (request: HttpRequest, context: InvocationContext) => {
         const body = await streamToJson(request.body);
-        context.debug('Received notification');
-        context.debug(JSON.stringify(body, null, 2));
+        context.log('Received notification');
+        context.log(JSON.stringify(body, null, 2));
 
         const tenantId = process.env.AAD_APP_TENANT_ID;
         const clientId = process.env.AAD_APP_CLIENT_ID;
 
         const token = body?.validationTokens[0];
-        context.debug(`Validating token: ${token}, tenantId: ${tenantId}, clientId: ${clientId}...`);
+        context.log(`Validating token: ${token}, tenantId: ${tenantId}, clientId: ${clientId}...`);
         await validateToken(token, tenantId, clientId);
         context.log('Token validated');
 
@@ -44,14 +44,14 @@ app.http('notification', {
             return;
         }
 
-        context.debug(JSON.stringify(message, null, 2));
+        context.log(JSON.stringify(message, null, 2));
 
         const queueClient = await getQueueClient('queue-connection');
         const messageString = btoa(JSON.stringify(message));
-        context.debug('Sending message to queue queue-connection: ${message}');
+        context.log('Sending message to queue queue-connection: ${message}');
         // must base64 encode
         await queueClient.sendMessage(messageString);
-        context.debug('Message sent');
+        context.log('Message sent');
 
         return {
             status: 202

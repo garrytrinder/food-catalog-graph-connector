@@ -1,6 +1,6 @@
 import { QueueServiceClient } from '@azure/storage-queue';
 import { ConnectionMessage } from './ConnectionMessage';
-import { ContentMessage } from './ContentMessage';
+import { ContentMessage, CrawlType } from './ContentMessage';
 
 export async function getQueueClient(queueName: string) {
   const connectionString = process.env.AzureWebJobsStorage;
@@ -19,11 +19,11 @@ export async function enqueueCheckStatus(location: string) {
   await queueClient.sendMessage(btoa(JSON.stringify(message)), { visibilityTimeout: 60 });
 }
 
-export async function startFullCrawl() {
+export async function startCrawl(crawlType: CrawlType) {
   const queueClient = await getQueueClient('queue-content');
   const message: ContentMessage = {
     action: 'crawl',
-    crawlType: 'full'
+    crawlType: crawlType
   }
   await queueClient.sendMessage(btoa(JSON.stringify(message)));
 }

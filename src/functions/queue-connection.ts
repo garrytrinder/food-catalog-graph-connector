@@ -3,7 +3,7 @@ import { ResponseType } from "@microsoft/microsoft-graph-client";
 import { ExternalConnectors } from "@microsoft/microsoft-graph-types";
 import { config } from "../common/config";
 import { client } from "../common/graphClient";
-import { enqueueCheckStatus, startFullCrawl } from "../common/queueClient";
+import { enqueueCheckStatus, startCrawl } from "../common/queueClient";
 import { resultLayout } from "../common/resultLayout";
 import { ConnectionMessage } from "../common/ConnectionMessage";
 
@@ -50,7 +50,7 @@ async function checkSchemaStatus(location: string) {
             await enqueueCheckStatus(location);
             break;
         case 'completed':
-            await startFullCrawl();
+            await startCrawl('full');
             break;
     }
 }
@@ -65,29 +65,29 @@ app.storageQueue("connectionQueue", {
     connection: "AzureWebJobsStorage",
     queueName: "queue-connection",
     handler: async (message: ConnectionMessage, context: InvocationContext) => {
-        context.debug('Received message from queue queue-connection');
-        context.debug(JSON.stringify(message, null, 2));
+        context.log('Received message from queue queue-connection');
+        context.log(JSON.stringify(message, null, 2));
 
         const { action, connectorId, connectorTicket, location } = message;
 
         switch (action) {
             case 'create':
-                context.debug('Creating connection...');
+                context.log('Creating connection...');
                 await createConnection(connectorId, connectorTicket);
-                context.debug('Connection created');
-                context.debug('Creating schema...');
+                context.log('Connection created');
+                context.log('Creating schema...');
                 createSchema();
-                context.debug('Schema created');
+                context.log('Schema created');
                 break;
             case 'delete':
-                context.debug('Deleting connection...');
+                context.log('Deleting connection...');
                 await deleteConnection();
-                context.debug('Connection deleted');
+                context.log('Connection deleted');
                 break;
             case 'status':
-                context.debug('Checking schema status...');
+                context.log('Checking schema status...');
                 await checkSchemaStatus(location);
-                context.debug('Schema status checked');
+                context.log('Schema status checked');
                 break;
             default:
                 break;

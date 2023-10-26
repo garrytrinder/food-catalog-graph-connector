@@ -1,23 +1,35 @@
 const { TableClient, TableServiceClient } = require("@azure/data-tables");
+const { table } = require("console");
 const fs = require("fs");
 const path = require("path");
 
 (async () => {
-    const jsonString = fs.readFileSync(path.resolve(__dirname, "products.json"), "utf8");
-    const { products } = JSON.parse(jsonString);
+    const connectionString = process.argv[2] ? process.argv[2] : "UseDevelopmentStorage=true";
+    const reset = process.argv[3] === "--reset" || process.argv[3] === "-r" ? true : false;
 
-    const tableServiceClient = TableServiceClient.fromConnectionString("UseDevelopmentStorage=true");
+    const tableServiceClient = TableServiceClient.fromConnectionString(connectionString);
+
     let tables = [];
     for await (const table of tableServiceClient.listTables()) {
         tables.push(table.name);
     }
     if (tables.includes('products')) {
         console.log('Table already exists');
-        return;
+        if (reset) {
+            const tableClient = TableClient.fromConnectionString(connectionString, 'products');
+            for await (const entity of tableClient.listEntities()) {
+                await tableClient.deleteEntity(entity.partitionKey, entity.rowKey);
+            }
+        } else {
+            return;
+        }
     }
 
+    const jsonString = fs.readFileSync(path.resolve(__dirname, "products.json"), "utf8");
+    const { products } = JSON.parse(jsonString);
+
     await tableServiceClient.createTable('products');
-    const tableClient = TableClient.fromConnectionString("UseDevelopmentStorage=true", 'products');
+    const tableClient = TableClient.fromConnectionString(connectionString, 'products');
 
     const rows = products.map(product => {
         let {

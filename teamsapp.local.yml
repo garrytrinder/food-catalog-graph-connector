@@ -10,7 +10,7 @@ provision:
   - uses: script
     name: Ensure tables and data
     with:
-      run: node db.js
+      run: node tables.js
       workingDirectory: scripts
 
   - uses: script

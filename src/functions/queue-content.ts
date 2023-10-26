@@ -5,7 +5,7 @@ import { client } from "../common/graphClient";
 import { enqueueItemUpdate } from "../common/queueClient";
 import { addItem, getLastModified, recordLastModified } from "../common/tableClient";
 
-const apiUrl = process.env.NOTIFICATION_ENDPOINT;
+const { notificationEndpoint: apiUrl } = config;
 
 async function crawl(crawlType: CrawlType, context: InvocationContext) {
     let url = `${apiUrl}/api/products`;
@@ -87,7 +87,7 @@ async function processItem(itemId: string, itemAction: ItemAction, context: Invo
         .api(externalItemUrl)
         .header('content-type', 'application/json')
         .put(externalItem);
-    
+
     context.log(`Adding item ${product.id} to table storage...`);
     // track item to support deletion
     await addItem(product.id, context);

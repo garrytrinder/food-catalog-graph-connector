@@ -1,10 +1,11 @@
 import { QueueServiceClient } from '@azure/storage-queue';
 import { ConnectionMessage } from './ConnectionMessage';
 import { ContentMessage, CrawlType } from './ContentMessage';
+import { config } from './config';
 
 export async function getQueueClient(queueName: string) {
-  const connectionString = process.env.AzureWebJobsStorage;
-  const queueServiceClient = QueueServiceClient.fromConnectionString(connectionString);
+  const { storageAccountConnectionString } = config;
+  const queueServiceClient = QueueServiceClient.fromConnectionString(storageAccountConnectionString);
   await queueServiceClient.createQueue(queueName);
   return queueServiceClient.getQueueClient(queueName);
 }

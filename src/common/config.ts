@@ -1,4 +1,9 @@
 export const config = {
+  aadAppTenantId: process.env.AAD_APP_TENANT_ID,
+  aadAppClientId: process.env.AAD_APP_CLIENT_ID,
+  aadAppClientSecret: process.env.AAD_APP_CLIENT_SECRET,
+  storageAccountConnectionString: process.env.AzureWebJobsStorage,
+  notificationEndpoint: process.env.NOTIFICATION_ENDPOINT,
   connector: {
     // 3-32 characters
     id: 'foodstore',

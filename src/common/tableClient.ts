@@ -1,15 +1,16 @@
 import { TableClient, TableServiceClient } from "@azure/data-tables";
 import { InvocationContext } from "@azure/functions";
+import { config } from "./config";
 
 interface StateRecord {
     date: number;
 }
 
 export async function getTableClient(tableName: string) {
-    const connectionString = process.env.AzureWebJobsStorage;
-    const tableServiceClient = TableServiceClient.fromConnectionString(connectionString);
+    const { storageAccountConnectionString } = config;
+    const tableServiceClient = TableServiceClient.fromConnectionString(storageAccountConnectionString);
     await tableServiceClient.createTable(tableName);
-    return TableClient.fromConnectionString(connectionString, tableName);
+    return TableClient.fromConnectionString(storageAccountConnectionString, tableName);
 }
 
 export async function addItem(itemId: string, context: InvocationContext) {

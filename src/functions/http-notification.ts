@@ -3,6 +3,7 @@ import { ConnectionMessage } from "../common/ConnectionMessage";
 import { getQueueClient } from "../common/queueClient";
 import { validateToken } from "../common/validateToken";
 import { streamToJson } from "../common/utils";
+import { config } from "../common/config";
 
 enum TargetConnectorState {
     Enabled = 'enabled',
@@ -16,8 +17,10 @@ app.http('notification', {
         context.log('Received notification');
         context.log(JSON.stringify(body, null, 2));
 
-        const tenantId = process.env.AAD_APP_TENANT_ID;
-        const clientId = process.env.AAD_APP_CLIENT_ID;
+        const {
+            aadAppTenantId: tenantId,
+            aadAppClientSecret: clientId
+        } = config;
 
         const token = body?.validationTokens[0];
         context.log(`Validating token: ${token}, tenantId: ${tenantId}, clientId: ${clientId}...`);

@@ -1,7 +1,7 @@
 const { QueueServiceClient } = require("@azure/storage-queue");
 
 (async () => {
-    const queueNames = ["queue-connection", "queue-crawl"];
+    const queueNames = ["queue-connection", "queue-content"];
     const queueServiceClient = QueueServiceClient.fromConnectionString("UseDevelopmentStorage=true");
     let queues = [];
     for await (const queue of queueServiceClient.listQueues()) {

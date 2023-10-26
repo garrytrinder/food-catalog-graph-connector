@@ -65,18 +65,29 @@ app.storageQueue("connectionQueue", {
     connection: "AzureWebJobsStorage",
     queueName: "queue-connection",
     handler: async (message: ConnectionMessage, context: InvocationContext) => {
+        context.debug('Received message from queue queue-connection');
+        context.debug(JSON.stringify(message, null, 2));
+
         const { action, connectorId, connectorTicket, location } = message;
 
         switch (action) {
             case 'create':
+                context.debug('Creating connection...');
                 await createConnection(connectorId, connectorTicket);
+                context.debug('Connection created');
+                context.debug('Creating schema...');
                 createSchema();
+                context.debug('Schema created');
                 break;
             case 'delete':
+                context.debug('Deleting connection...');
                 await deleteConnection();
+                context.debug('Connection deleted');
                 break;
             case 'status':
+                context.debug('Checking schema status...');
                 await checkSchemaStatus(location);
+                context.debug('Schema status checked');
                 break;
             default:
                 break;

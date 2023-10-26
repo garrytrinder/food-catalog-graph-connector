@@ -1,4 +1,4 @@
-import { HttpRequest, app } from "@azure/functions";
+import { HttpRequest, InvocationContext, app } from "@azure/functions";
 import { getTableClient } from "../common/tableClient";
 import { randomUUID } from "crypto";
 import { streamToJson } from "../common/utils";
@@ -30,7 +30,7 @@ app.http('getProducts', {
 app.http('getProduct', {
     methods: ['GET'],
     route: 'products/{id}',
-    handler: async (request: HttpRequest) => {
+    handler: async (request: HttpRequest, context: InvocationContext) => {
         const { id } = request.params;
 
         try {

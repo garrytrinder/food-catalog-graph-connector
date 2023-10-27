@@ -9,26 +9,58 @@ const path = require("path");
 
     const tableServiceClient = TableServiceClient.fromConnectionString(connectionString);
 
-    let tables = [];
-    for await (const table of tableServiceClient.listTables()) {
-        tables.push(table.name);
+    async function getTables(tableServiceClient) {
+        let tables = [];
+        for await (const table of tableServiceClient.listTables()) {
+            tables.push(table.name)
+        }
+        return tables;
     }
-    if (tables.includes('products')) {
-        console.log('Table already exists');
-        if (reset) {
-            const tableClient = TableClient.fromConnectionString(connectionString, 'products');
-            for await (const entity of tableClient.listEntities()) {
-                await tableClient.deleteEntity(entity.partitionKey, entity.rowKey);
+
+    if (reset) {
+        const tables = await getTables(tableServiceClient);
+        tables.forEach(async table => {
+            const tableClient = TableClient.fromConnectionString(connectionString, table);
+            console.log(`Deleting table: ${table}`);
+            await tableClient.deleteTable();
+        });
+        let tablesExist = true;
+        while (tablesExist) {
+            console.log("Waiting for tables to be deleted...");
+            const tables = await getTables(tableServiceClient);
+            if (tables.length === 0) {
+                tablesExist = false;
+                console.log("All tables deleted.");
             }
-        } else {
-            return;
+            await new Promise(resolve => setTimeout(resolve, 1000));
         }
     }
 
     const jsonString = fs.readFileSync(path.resolve(__dirname, "products.json"), "utf8");
     const { products } = JSON.parse(jsonString);
 
-    await tableServiceClient.createTable('products');
+    const tables = await getTables(tableServiceClient);
+
+    if (tables.includes('products')) {
+        console.log(`Table ${table} already exists, skipping...`);
+        return;
+    }
+
+    let tableCreated = false;
+    while (!tableCreated) {
+        try {
+            await tableServiceClient.createTable('products');
+            tableCreated = true;
+        } catch (err) {
+            if (err.statusCode === 409) {
+                console.log('Table is marked for deletion, retrying in 5 seconds...');
+                await new Promise(resolve => setTimeout(resolve, 5000));
+            } else {
+                throw err;
+            }
+        }
+    }
+
     const tableClient = TableClient.fromConnectionString(connectionString, 'products');
 
     const rows = products.map(product => {

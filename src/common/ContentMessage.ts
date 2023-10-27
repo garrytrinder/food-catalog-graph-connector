@@ -1,4 +1,4 @@
-export type CrawlType = 'full' | 'incremental';
+export type CrawlType = 'full' | 'incremental' | 'removeDeleted';
 
 export type ItemAction = 'update' | 'delete';
 

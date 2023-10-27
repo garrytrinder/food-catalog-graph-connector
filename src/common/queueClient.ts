@@ -38,3 +38,13 @@ export async function enqueueItemUpdate(itemId: string) {
   }
   await queueClient.sendMessage(btoa(JSON.stringify(message)));
 }
+
+export async function enqueueItemDeletion(itemId: string) {
+  const queueClient = await getQueueClient('queue-content');
+  const message: ContentMessage = {
+    action: 'item',
+    itemAction: 'delete',
+    itemId
+  }
+  await queueClient.sendMessage(btoa(JSON.stringify(message)));
+}

@@ -13,7 +13,20 @@ export async function getTableClient(tableName: string) {
     return TableClient.fromConnectionString(storageAccountConnectionString, tableName);
 }
 
-export async function addItem(itemId: string, context: InvocationContext) {
+export async function getItemIds(context: InvocationContext) {
+    context.log(`Getting table client for externalitems...`);
+    const tableClient = await getTableClient('externalitems');
+    const entities = tableClient.listEntities();
+
+    const items: string[] = [];
+    for await (const entity of entities) {
+        items.push(entity.rowKey);
+    }
+
+    return items;
+}
+
+export async function addItemToTable(itemId: string, context: InvocationContext) {
     context.log(`Getting table client for externalitems...`);
     const tableClient = await getTableClient('externalitems');
     const entity = {
@@ -23,6 +36,13 @@ export async function addItem(itemId: string, context: InvocationContext) {
 
     context.log(`Upserting entity ${JSON.stringify(entity, null, 2)}...`);
     await tableClient.upsertEntity(entity);
+}
+
+export async function removeItemFromTable(itemId: string, context: InvocationContext) {
+    context.log(`Getting table client for externalitems...`);
+    const tableClient = await getTableClient('externalitems');
+    context.log(`Deleting entity ${itemId}...`);
+    await tableClient.deleteEntity('products', itemId);
 }
 
 export async function recordLastModified(lastModifiedDate: number, context: InvocationContext) {

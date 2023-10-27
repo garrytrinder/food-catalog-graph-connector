@@ -2,12 +2,24 @@ import { InvocationContext, app } from "@azure/functions";
 import { ContentMessage, CrawlType, ItemAction } from "../common/ContentMessage";
 import { config } from "../common/config";
 import { client } from "../common/graphClient";
-import { enqueueItemUpdate } from "../common/queueClient";
-import { addItem, getLastModified, recordLastModified } from "../common/tableClient";
+import { enqueueItemDeletion, enqueueItemUpdate } from "../common/queueClient";
+import { addItemToTable, getItemIds, getLastModified, recordLastModified, removeItemFromTable } from "../common/tableClient";
 
 const { notificationEndpoint: apiUrl } = config;
 
 async function crawl(crawlType: CrawlType, context: InvocationContext) {
+    switch (crawlType) {
+        case 'full':
+        case 'incremental':
+            await crawlFullOrIncremental(crawlType, context);
+            break;
+        case 'removeDeleted':
+            await removeDeleted(context);
+            break;
+    }
+}
+
+async function crawlFullOrIncremental(crawlType: CrawlType, context: InvocationContext) {
     let url = `${apiUrl}/api/products`;
 
     if (crawlType === 'incremental') {
@@ -32,9 +44,46 @@ async function crawl(crawlType: CrawlType, context: InvocationContext) {
     }
 }
 
-async function processItem(itemId: string, itemAction: ItemAction, context: InvocationContext) {
-    // TODO: add support for deleting item
+async function removeDeleted(context: InvocationContext) {
+    const url = `${apiUrl}/api/products`;
 
+    context.log(`Retrieving items from ${url}...`);
+
+    const res = await fetch(url);
+    if (!res.ok) {
+        context.log(`Error retrieving item from ${url}: ${res.statusText}`);
+        return;
+    }
+
+    const products: Product[] = await res.json();
+    context.log(`Retrieved ${products.length} items from ${url}`);
+
+    context.log('Retrieving ingested items...');
+    const ingestedItemIds = await getItemIds(context);
+
+    ingestedItemIds.forEach(ingestedItemId => {
+        if (products.find(product => product.id === ingestedItemId)) {
+            context.log(`Item ${ingestedItemId} still exists, skipping...`);
+        }
+        else {
+            context.log(`Item ${ingestedItemId} no longer exists, deleting...`);
+            enqueueItemDeletion(ingestedItemId);
+        }
+    });
+}
+
+async function processItem(itemId: string, itemAction: ItemAction, context: InvocationContext) {
+    switch (itemAction) {
+        case 'update':
+            await updateItem(itemId, context);
+            break;
+        case 'delete':
+            await deleteItem(itemId, context);
+            break;
+    }
+}
+
+async function updateItem(itemId: string, context: InvocationContext) {
     const url = `${apiUrl}/api/products/${itemId}`;
 
     context.log(`Retrieving item from ${url}...`);
@@ -90,10 +139,22 @@ async function processItem(itemId: string, itemAction: ItemAction, context: Invo
 
     context.log(`Adding item ${product.id} to table storage...`);
     // track item to support deletion
-    await addItem(product.id, context);
+    await addItemToTable(product.id, context);
     context.log(`Tracking last modified date ${product.last_modified_t}`);
     // track last modified date for incremental crawl
     await recordLastModified(product.last_modified_t, context);
+}
+
+async function deleteItem(itemId: string, context: InvocationContext) {
+    const externalItemUrl = `/external/connections/${config.connector.id}/items/${itemId}`;
+    context.log(`Deleting external item ${externalItemUrl}...`)
+
+    await client
+        .api(externalItemUrl)
+        .delete();
+
+    context.log(`Removing item ${itemId} from table storage...`);
+    await removeItemFromTable(itemId, context);
 }
 
 app.storageQueue("contentQueue", {

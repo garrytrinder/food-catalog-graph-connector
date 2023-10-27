@@ -69,8 +69,7 @@ sequenceDiagram
     Microsoft Graph-->>Connector fn:response(status)
     
     alt status=inprogress
-      Connector fn->>Connector fn:sleep(5000)
-      Connector fn->>Connector q:message(status, location)
+      Connector fn->>Connector q:message(status, location, sleep=60s)
       Connector q-->>Connector fn:response(201 Created)
     else status=completed
       Connector fn->>Content q:message(crawl, full)

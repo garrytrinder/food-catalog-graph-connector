@@ -10,7 +10,7 @@ app.http('getProducts', {
         const filter = request.query.get('$filter');
         const select = request.query.get('$select')?.split(',') ?? ['rowKey', 'last_modified_t'];
 
-        const products: Product[] = [];
+        let products: Product[] = [];
         const tableClient = await getTableClient('products');
         const entities = tableClient.listEntities({
             queryOptions: {
@@ -27,6 +27,13 @@ app.http('getProducts', {
             delete (product as any).rowKey;
             products.push(product);
         }
+
+        // it's important that the API returns products sorted
+        // by last_modified_t, so that we can properly store
+        // the last modified date for incremental crawls
+        // this is especially important if the initial crawl breaks
+        // mid-crawl and we need to resume from the last modified date
+        products = products.sort((a, b) => a.last_modified_t - b.last_modified_t);
 
         return {
             status: 200,

@@ -13,20 +13,82 @@ Sample data is taken from [Open Food Facts API](https://openfoodfacts.github.io/
 
 ## Get started
 
-- Login to dev tunnels, `devtunnel user login`
+- Clone repo
+- Open repo in VSCode
 - First run:
+  - Login to dev tunnels, `devtunnel user login`
   - Create permanent dev tunnel, `devtunnel create`, take note of the tunnel id or name
   - Create dev tunnel port, `devtunnel port create <tunnel-id-or-name> -p 7071`
   - Open port, `devtunnel access create <tunnel-id-or-name> -p 7071 -a`
-- Start tunnel, `devtunnel host <tunnel-id-or-name>`, take note of the tunnel URL shown in output
-- Clone repo
-- Open repo in VSCode
-- Update `env/.env.local`
-  - Set `NOTIFICATION_ENDPOINT` to the tunnel URL
-  - Set `NOTIFICATION_DOMAIN` to the tunnel URL without `https://`
+  - Update `env/.env.local`
+    - Set `NOTIFICATION_ENDPOINT` to the tunnel URL
+    - Set `NOTIFICATION_DOMAIN` to the tunnel URL without `https://`
 - Press `F5`
+  - Start tunnel, `devtunnel host <tunnel-id-or-name>`, take note of the tunnel URL shown in output
 
 ## Architecture
+
+### System diagram
+
+```mermaid
+C4Context
+title System Context diagram for a Food Products DB connector
+Person(admin, "Microsoft 365 admin", "Manages Microsoft 365 configuration")
+Person(user, "Microsoft 365 user")
+  
+Boundary(bM365, "Microsoft Cloud") {
+    System(microsoft365, "Microsoft 365")
+    System(connector, "Food Products DB connector", "Microsoft Graph connector")
+}
+
+Boundary(bLOB, "Line of Business") {
+    System_Ext(externalContent, "Food Products DB", "Contains inforamtion about food products")
+}
+
+Rel(admin, microsoft365, "Manages the Microsoft Graph connector")
+UpdateRelStyle(admin, microsoft365, $offsetX="-225", $offsetY="-40")
+Rel(user, microsoft365, "Uses Microsoft 365 to find relevant information")
+UpdateRelStyle(user, microsoft365, $offsetX="80", $offsetY="-40")
+Rel(connector, externalContent, "Imports data from")
+UpdateRelStyle(connector, externalContent, $offsetY="10", $offsetX="-30")
+Rel(connector, microsoft365, "Imports data to")
+UpdateRelStyle(connector, microsoft365, $offsetY="10", $offsetX="-40")
+```
+
+### Container diagram for Food Products DB connector
+
+```mermaid
+C4Container
+title Container diagram for Food Products DB connector
+Person(admin, "Microsoft 365 admin", "Manages Microsoft 365 configuration")
+System(microsoft365, "Microsoft 365")
+System_Ext(externalContent, "Food Products DB", "Contains information about food products")
+
+Boundary(c1, "Food Products DB connector") {
+    Container(api, "HTTP functions", "HTTP-triggered Azure Functions")
+    Container(fnTimer, "Timer functions", "Timer-triggered Azure Functions", "Trigger crawl and cleanup on schedule")
+    Container(fnQueue, "Queue functions", "Queue-triggered Azure Functions", "Manage external connection and -content")
+    ContainerDb(table, "Database", "Azure Table Storage", "Stores ingestion state")
+    ContainerQueue(queue, "Queues", "Azure Queue Storage", "Configuration- and crawl messages")
+}
+
+Rel(admin, microsoft365, "Toggles Microsoft Graph connector status", "Teams Admin Center")
+UpdateRelStyle(admin, microsoft365, $offsetY="10", $offsetX="-55")
+Rel(microsoft365, api, "Sends connector status notification", "HTTP")
+UpdateRelStyle(microsoft365, api, $offsetX="-170")
+Rel(api, queue, "Enqueues messages", "HTTP")
+UpdateRelStyle(api, queue, $offsetX="-130")
+Rel(queue, fnQueue, "Triggers", "binding")
+UpdateRelStyle(queue, fnQueue, $offsetX="10")
+Rel(fnQueue, externalContent, "Reads products information", "HTTP")
+UpdateRelStyle(fnQueue, externalContent, $offsetX="10", $offsetY="-10")
+Rel(fnQueue, microsoft365, "Manages connection and data", "HTTP")
+UpdateRelStyle(fnQueue, microsoft365, $offsetX="-180", $offsetY="-30")
+Rel(fnTimer, queue, "Enqeues messages", "HTTP")
+UpdateRelStyle(fnTimer, queue, $offsetX="-70", $offsetY="-20")
+Rel(fnQueue, table, "Reads and writes data", "HTTP")
+UpdateRelStyle(fnQueue, table, $offsetX="-60", $offsetY="20")
+```
 
 ### Activating connector
 

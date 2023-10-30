@@ -40,10 +40,12 @@ async function createSchema() {
     await enqueueCheckStatus(location);
 }
 
-async function checkSchemaStatus(location: string) {
+async function checkSchemaStatus(location: string, context: InvocationContext) {
     const res: ExternalConnectors.ConnectionOperation = await client
         .api(location)
         .get();
+
+    context.log(`Schema provisioning status: ${res.status}`);
 
     switch (res.status) {
         case 'inprogress':
@@ -75,9 +77,9 @@ app.storageQueue("connectionQueue", {
                 context.log('Creating connection...');
                 await createConnection(connectorId, connectorTicket);
                 context.log('Connection created');
-                context.log('Creating schema...');
+                context.log('Submitting schema for provisioning...');
                 createSchema();
-                context.log('Schema created');
+                context.log('Schema submitted');
                 break;
             case 'delete':
                 context.log('Deleting connection...');
@@ -86,7 +88,7 @@ app.storageQueue("connectionQueue", {
                 break;
             case 'status':
                 context.log('Checking schema status...');
-                await checkSchemaStatus(location);
+                await checkSchemaStatus(location, context);
                 context.log('Schema status checked');
                 break;
             default:

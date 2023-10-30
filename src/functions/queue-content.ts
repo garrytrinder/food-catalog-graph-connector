@@ -102,14 +102,14 @@ async function updateItem(itemId: string, context: InvocationContext) {
         id: product.id,
         properties: {
             'categories@odata.type': 'Collection(String)',
-            categories: product.categories.replace(/en:/g, '').split(', '),
+            categories: product.categories?.replace(/en:/g, '')?.split(', ') ?? [''],
             ecoscore: product.ecoscore_grade,
             imageUrl: product.image_url,
             'ingredients@odata.type': 'Collection(String)',
-            ingredients: product.ingredients_text.split(', '),
+            ingredients: product.ingredients_text?.split(', ') ?? [''],
             nutriscore: product.nutriscore_grade,
             'traces@odata.type': 'Collection(String)',
-            traces: product.traces_tags.replace(/en:/g, '').split(', '),
+            traces: product.traces_tags?.replace(/en:/g, '')?.split(', ') ?? [''],
             name: product.product_name,
             url: product.url.replace('.net/', '.org/')
         },

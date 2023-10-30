@@ -10,6 +10,8 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = {
   }
 }
 
-var tableStorageConnectionString = 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
+// create a storage account connection string
+var storageAccountConnectionString = 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
 
-output SECRET_TABLE_STORAGE_CONNECTION_STRING string = tableStorageConnectionString
+// write the storage account connection string to environment file
+output SECRET_STORAGE_ACCOUNT_CONNECTION_STRING string = storageAccountConnectionString

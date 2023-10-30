@@ -15,16 +15,16 @@ Sample data is taken from [Open Food Facts API](https://openfoodfacts.github.io/
 
 - Clone repo
 - Open repo in VSCode
-- First run:
+- First run (macOS only):
   - Login to dev tunnels, `devtunnel user login`
   - Create permanent dev tunnel, `devtunnel create`, take note of the tunnel id or name
   - Create dev tunnel port, `devtunnel port create <tunnel-id-or-name> -p 7071`
   - Open port, `devtunnel access create <tunnel-id-or-name> -p 7071 -a`
+  - Start tunnel, `devtunnel host <tunnel-id-or-name>`, take note of the tunnel URL shown in output
   - Update `env/.env.local`
     - Set `NOTIFICATION_ENDPOINT` to the tunnel URL
     - Set `NOTIFICATION_DOMAIN` to the tunnel URL without `https://`
 - Press `F5`
-  - Start tunnel, `devtunnel host <tunnel-id-or-name>`, take note of the tunnel URL shown in output
 
 ## Architecture
 

@@ -11,7 +11,7 @@ export const resultLayout = {
           "items": [
             {
               "type": "Image",
-              "url": "https://searchuxcdn.blob.core.windows.net/designerapp/images/DefaultMRTIcon.png",
+              "url": "https://upload.wikimedia.org/wikipedia/commons/c/c7/OpenFoodFacts-logo.webp",
               "size": "Small",
               "horizontalAlignment": "Center",
               "altText": "Result logo"
@@ -25,28 +25,49 @@ export const resultLayout = {
           "items": [
             {
               "type": "TextBlock",
-              "text": "[${title}](${url})",
+              "text": "[${name}](${url})",
               "color": "Accent",
               "size": "Medium",
               "weight": "Bolder"
             },
             {
               "type": "TextBlock",
-              "text": "${url}",
-              "wrap": true,
-              "maxLines": 3
+              "text": "**Categories:** ${join(categories, ', ')}",
+              "spacing": "Small",
+              "$when": "${categories!=''}"
             },
             {
               "type": "TextBlock",
-              "text": "Modified on {{DATE(${date})}}",
-              "spacing": "Small"
+              "text": "**Ingredients:** ${join(ingredients, ', ')}",
+              "spacing": "Small",
+              "$when": "${ingredients!=''}"
             },
             {
-              "type": "TextBlock",
-              "wrap": true,
-              "maxLines": 3,
-              "spacing": "Medium",
-              "text": "${excerpt}"
+              "type": "ColumnSet",
+              "columns": [
+                {
+                  "type": "Column",
+                  "width": "stretch",
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "text": "**Nutriscore:** ${nutriscore}",
+                      "spacing": "Small"
+                    }
+                  ]
+                },
+                {
+                  "type": "Column",
+                  "width": "stretch",
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "text": "**Ecoscore:** ${ecoscore}",
+                      "spacing": "Small"
+                    }
+                  ]
+                }
+              ]
             }
           ],
           "horizontalAlignment": "Center",
@@ -71,18 +92,19 @@ export const resultLayout = {
   ],
   "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
   "$data": {
-    "excerpt": {
-      "title": "Contoso Marketing Analysis - Q3 FY18",
-      "titleUrl": "https://modernacdesigner.azurewebsites.net",
-      "modifiedBy": "Amanda Brady",
-      "modifiedTime": "2019-09-25T06:08:39Z,SHORT",
-      "description": "Marketing team at Contoso.., and looking at the Contoso Marketing documents on the team site. This contains the data from FY20 and will taken over to FY21...Marketing Planning is ongoing for FY20..",
-      "imageUrl": "https://searchuxcdn.azureedge.net/designerapp/images/stock-image.png"
-    },
-    "date": "2019-09-25T06:08:39Z,SHORT",
-    "abc": "Amanda Brady",
+    "ingredients": [
+      "cocoa mass",
+      "sugar"
+    ],
+    "categories": [
+      "chocolate",
+      "snacks",
+      "sweet snacks"
+    ],
+    "nutriscore": "e",
     "url": "https://modernacdesigner.azurewebsites.net",
+    "ecoscore": "d",
     "imageUrl": "https://searchuxcdn.azureedge.net/designerapp/images/stock-image.png",
-    "title": "Contoso Marketing Analysis - Q3 FY18"
+    "name": "Contoso Marketing Analysis - Q3 FY18"
   }
-}
+};

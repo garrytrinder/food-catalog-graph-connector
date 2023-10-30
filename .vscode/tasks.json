@@ -46,6 +46,9 @@
       "windows": {
         "command": ".\\scripts\\devtunnel.ps1"
       },
+      "osx": {
+        "command": "./scripts/devtunnel.sh"
+      },
       "problemMatcher": {
         "pattern": [
           {

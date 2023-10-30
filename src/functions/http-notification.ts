@@ -19,7 +19,7 @@ app.http('notification', {
 
         const {
             aadAppTenantId: tenantId,
-            aadAppClientSecret: clientId
+            aadAppClientId: clientId
         } = config;
 
         const token = body?.validationTokens[0];

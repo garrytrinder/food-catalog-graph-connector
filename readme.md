@@ -13,33 +13,30 @@ Sample data is taken from [Open Food Facts API](https://openfoodfacts.github.io/
 
 ## Get started
 
-
 ### 1. Project setup
 
 - Clone repo
 - Open repo in VSCode
-- First run (macOS only):
-  - Login to dev tunnels, `devtunnel user login`
-  - Create permanent dev tunnel, `devtunnel create`, take note of the tunnel id or name
-  - Create dev tunnel port, `devtunnel port create <tunnel-id-or-name> -p 7071`
-  - Open port, `devtunnel access create <tunnel-id-or-name> -p 7071 -a`
-  - Start tunnel, `devtunnel host <tunnel-id-or-name>`, take note of the tunnel URL shown in output
-  - Update `env/.env.local`
-    - Set `NOTIFICATION_ENDPOINT` to the tunnel URL
-    - Set `NOTIFICATION_DOMAIN` to the tunnel URL without `https://`
 - Press `F5`, follow the sign in prompts
+- Wait for all task to complete
 
-### 2. Enable Graph Connector
+### 2. Enable Graph connector
 
-- Open a browser tab and navigate to the [Manage apps](https://admin.teams.microsoft.com/policies/manage-apps) area of the [Microsoft Teams Admin Center](https://admin.teams.microsoft.com)
+- In a web browser, navigate to the [Microsoft Teams Admin Center](https://admin.teams.microsoft.com)
+- Open the [Manage apps](https://admin.teams.microsoft.com/policies/manage-apps) section
 - In the table displaying `All apps`, search for `Foodsie-local`
 - Select the app in the table to open the app details page
 - Select `Publish` and confirm the prompt. You will been taken back to the `All apps` page and a confirmation banner will be displayed
 - Search for `Foodsie-local` and open the app details page
 - Select the `Graph Connector` tab
-- A banner will be displayed. Click `Grant permissions`, this will open a permissions consent page in a pop-up window. Confirm the permissions. This will automatically toggle the connection status to on and start the setup process
+- A banner will be displayed. Click `Grant permissions`, this will open a permissions consent page in a pop-up window. Confirm the permissions. This will automatically toggle the connection status to on and start the setup process which includes:
+  - creating an external connection
+  - provisioning the schema
+  - importing external content
 
-The process will take between 3-13 minutes in total. During this time you may see an error message on this page, however this can be ignored and you can refresh the page to check on the status.
+The process will take several minutes in total. During this time you may see an error message on this page, however this can be ignored and you can refresh the page to check on the status.
+
+> TIP: To monitor the activity, in Visual Studio Code, check out the output of the `func: host start` task. You'll see the status of the different activities as they are completed.
 
 When the process is complete you will see a table confirming that the connection has been successful.
 
@@ -49,27 +46,32 @@ When the process is complete you will see a table confirming that the connection
 
 ### 3. Include data in results
 
-- Navigate to the [Data Sources](https://admin.microsoft.com/?source=applauncher#/MicrosoftSearch/connectors) tab in the [Search & Intelligence](https://admin.microsoft.com/?source=applauncher#/MicrosoftSearch) area of the [Microsoft 365 admin center](https://admin.microsoft.com/)
-- A table will display Connections. In the _Required actions_ column, select the link to _Include Connector Results_ and confirm the prompt
+- In the web browser navigate to the [Microsoft 365 admin center](https://admin.microsoft.com/)
+- From the side navigation, open [Settings > Search & Intelligence](https://admin.microsoft.com/?source=applauncher#/MicrosoftSearch)
+- On the page, navigate to the [Data Sources](https://admin.microsoft.com/?source=applauncher#/MicrosoftSearch/connectors) tab
+- A table will display available connections. In the **Required actions** column, select the link to **Include Connector Results** and confirm the prompt
 
 ### 4. Refresh the Result Type template
 
-> There is a known issue whereby applying a result type programatically results in an empty adaptive card, so we need to apply the card in the user interface
+> There is a known issue whereby applying a result type programmatically results in an empty adaptive card, so we need to apply the card in the user interface
 
-- Navigate to the [Result Types](https://admin.microsoft.com/?source=applauncher#/MicrosoftSearch/resulttypes) under the [Customizations](https://admin.microsoft.com/?source=applauncher#/MicrosoftSearch/connectors) tab in the [Search & Intelligence](https://admin.microsoft.com/?source=applauncher#/MicrosoftSearch) area of the [Microsoft 365 admin center](https://admin.microsoft.com/)
-- Select the `foodstore` row, select `Delete` and confirm the prompt.
-- Select `Add`
-- Enter `foodstore` as the name of the result type and select `Next`
-- Select `Foodsie-local` as the content source and select `Next`
-- Skip adding rules to the result type, select `Next`
-- Copy and paste the contents of [resultType.json](./resultLayout.json) into the text box and select `Next`
-- Select `Add result type`, then `Done`
+- In Visual Studio Code, open the `resultType.json` file and copy its contents to clipboard (CTRL+A then CTRL+C on Windows, CMD+A then CMD+C on Mac)
+- In the web browser, in the Microsoft 365 admin center, navigate to the [Settings > Search & Intelligence](https://admin.microsoft.com/?source=applauncher#/MicrosoftSearch) area
+- Activate the [Customizations](https://admin.microsoft.com/?source=applauncher#/MicrosoftSearch/connectors) tab
+- Select the [Result Types](https://admin.microsoft.com/?source=applauncher#/MicrosoftSearch/resulttypes) page
+- Select the `foodstore` row to open the side panel with additional information
+- Under the `Result Layout` section, select `Edit`
+- In the `Paste the JSON script that you created with Layout Designer` field, paste the contents of the clipboard (CTRL+V on Windows, CMD+V on Mac)
+- Confirm the changes by selecting `Next`
+- Confirm the changes by selecting `Update Result Type`
+- Close the dialog by selecting `Done`
+- Wait a few minutes for the changes to be applied
 
 ### 5. Test search
 
 - Navigate to [Microsoft365.com](https://www.microsoft365.com)
 - Enter `sweets` into the search bar
-- Items will be shown from the data ingested by the Graph Connector in the search results.
+- Items will be shown from the data ingested by the Graph connector in the search results.
 
 ## Architecture
 

@@ -13,6 +13,9 @@ Sample data is taken from [Open Food Facts API](https://openfoodfacts.github.io/
 
 ## Get started
 
+
+### 1. Project setup
+
 - Clone repo
 - Open repo in VSCode
 - First run (macOS only):
@@ -24,7 +27,49 @@ Sample data is taken from [Open Food Facts API](https://openfoodfacts.github.io/
   - Update `env/.env.local`
     - Set `NOTIFICATION_ENDPOINT` to the tunnel URL
     - Set `NOTIFICATION_DOMAIN` to the tunnel URL without `https://`
-- Press `F5`
+- Press `F5`, follow the sign in prompts
+
+### 2. Enable Graph Connector
+
+- Open a browser tab and navigate to the [Manage apps](https://admin.teams.microsoft.com/policies/manage-apps) area of the [Microsoft Teams Admin Center](https://admin.teams.microsoft.com)
+- In the table displaying `All apps`, search for `Foodsie-local`
+- Select the app in the table to open the app details page
+- Select `Publish` and confirm the prompt. You will been taken back to the `All apps` page and a confirmation banner will be displayed
+- Search for `Foodsie-local` and open the app details page
+- Select the `Graph Connector` tab
+- A banner will be displayed. Click `Grant permissions`, this will open a permissions consent page in a pop-up window. Confirm the permissions. This will automatically toggle the connection status to on and start the setup process
+
+The process will take between 3-13 minutes in total. During this time you may see an error message on this page, however this can be ignored and you can refresh the page to check on the status.
+
+When the process is complete you will see a table confirming that the connection has been successful.
+
+|Connection name|Experiences     |Connection status|
+|---------------|----------------|-----------------|
+|**foodstore**  |Microsoft Search|✅ Success       |
+
+### 3. Include data in results
+
+- Navigate to the [Data Sources](https://admin.microsoft.com/?source=applauncher#/MicrosoftSearch/connectors) tab in the [Search & Intelligence](https://admin.microsoft.com/?source=applauncher#/MicrosoftSearch) area of the [Microsoft 365 admin center](https://admin.microsoft.com/)
+- A table will display Connections. In the _Required actions_ column, select the link to _Include Connector Results_ and confirm the prompt
+
+### 4. Refresh the Result Type template
+
+> There is a known issue whereby applying a result type programatically results in an empty adaptive card, so we need to apply the card in the user interface
+
+- Navigate to the [Result Types](https://admin.microsoft.com/?source=applauncher#/MicrosoftSearch/resulttypes) under the [Customizations](https://admin.microsoft.com/?source=applauncher#/MicrosoftSearch/connectors) tab in the [Search & Intelligence](https://admin.microsoft.com/?source=applauncher#/MicrosoftSearch) area of the [Microsoft 365 admin center](https://admin.microsoft.com/)
+- Select the `foodstore` row, select `Delete` and confirm the prompt.
+- Select `Add`
+- Enter `foodstore` as the name of the result type and select `Next`
+- Select `Foodsie-local` as the content source and select `Next`
+- Skip adding rules to the result type, select `Next`
+- Copy and paste the contents of [resultType.json](./resultLayout.json) into the text box and select `Next`
+- Select `Add result type`, then `Done`
+
+### 5. Test search
+
+- Navigate to [Microsoft365.com](https://www.microsoft365.com)
+- Enter `sweets` into the search bar
+- Items will be shown from the data ingested by the Graph Connector in the search results.
 
 ## Architecture
 
@@ -46,13 +91,13 @@ Boundary(bLOB, "Line of Business") {
 }
 
 Rel(admin, microsoft365, "Manages the Microsoft Graph connector")
-UpdateRelStyle(admin, microsoft365, $offsetX="-225", $offsetY="-40")
+UpdateRelStyle(admin, microsoft365, $offsetX-"-225", $offsetY-"-40")
 Rel(user, microsoft365, "Uses Microsoft 365 to find relevant information")
-UpdateRelStyle(user, microsoft365, $offsetX="80", $offsetY="-40")
+UpdateRelStyle(user, microsoft365, $offsetX-"80", $offsetY-"-40")
 Rel(connector, externalContent, "Imports data from")
-UpdateRelStyle(connector, externalContent, $offsetY="10", $offsetX="-30")
+UpdateRelStyle(connector, externalContent, $offsetY-"10", $offsetX-"-30")
 Rel(connector, microsoft365, "Imports data to")
-UpdateRelStyle(connector, microsoft365, $offsetY="10", $offsetX="-40")
+UpdateRelStyle(connector, microsoft365, $offsetY-"10", $offsetX-"-40")
 ```
 
 ### Container diagram for Food Products DB connector
@@ -73,21 +118,21 @@ Boundary(c1, "Food Products DB connector") {
 }
 
 Rel(admin, microsoft365, "Toggles Microsoft Graph connector status", "Teams Admin Center")
-UpdateRelStyle(admin, microsoft365, $offsetY="10", $offsetX="-55")
+UpdateRelStyle(admin, microsoft365, $offsetY-"10", $offsetX-"-55")
 Rel(microsoft365, api, "Sends connector status notification", "HTTP")
-UpdateRelStyle(microsoft365, api, $offsetX="-170")
+UpdateRelStyle(microsoft365, api, $offsetX-"-170")
 Rel(api, queue, "Enqueues messages", "HTTP")
-UpdateRelStyle(api, queue, $offsetX="-130")
+UpdateRelStyle(api, queue, $offsetX-"-130")
 Rel(queue, fnQueue, "Triggers", "binding")
-UpdateRelStyle(queue, fnQueue, $offsetX="10")
+UpdateRelStyle(queue, fnQueue, $offsetX-"10")
 Rel(fnQueue, externalContent, "Reads products information", "HTTP")
-UpdateRelStyle(fnQueue, externalContent, $offsetX="10", $offsetY="-10")
+UpdateRelStyle(fnQueue, externalContent, $offsetX-"10", $offsetY-"-10")
 Rel(fnQueue, microsoft365, "Manages connection and data", "HTTP")
-UpdateRelStyle(fnQueue, microsoft365, $offsetX="-180", $offsetY="-30")
+UpdateRelStyle(fnQueue, microsoft365, $offsetX-"-180", $offsetY-"-30")
 Rel(fnTimer, queue, "Enqueues messages", "HTTP")
-UpdateRelStyle(fnTimer, queue, $offsetX="-70", $offsetY="-20")
+UpdateRelStyle(fnTimer, queue, $offsetX-"-70", $offsetY-"-20")
 Rel(fnQueue, table, "Reads and writes data", "HTTP")
-UpdateRelStyle(fnQueue, table, $offsetX="-60", $offsetY="20")
+UpdateRelStyle(fnQueue, table, $offsetX-"-60", $offsetY-"20")
 ```
 
 ### Activating connector
@@ -116,7 +161,7 @@ sequenceDiagram
   deactivate Notification fn
   TAC-->>Admin:activated
 
-  alt message=create
+  alt message-create
     Connector q->>Connector fn:message(create, id, ticket)
     activate Connector fn
     Connector fn->>Microsoft Graph:createConnection(id, ticket, connectionInfo)
@@ -125,15 +170,15 @@ sequenceDiagram
     Microsoft Graph-->>Connector fn:response(202 Accepted, location)
     Connector fn->>Connector q:message(status, location)
     Connector q-->>Connector fn:response(201 Created)
-  else message=status
+  else message-status
     Connector q->>Connector fn:message(status, location)
     Connector fn->>Microsoft Graph:operationStatus(location)
     Microsoft Graph-->>Connector fn:response(status)
     
-    alt status=inprogress
-      Connector fn->>Connector q:message(status, location, sleep=60s)
+    alt status-inprogress
+      Connector fn->>Connector q:message(status, location, sleep-60s)
       Connector q-->>Connector fn:response(201 Created)
-    else status=completed
+    else status-completed
       Connector fn->>Content q:message(crawl, full)
       Content q-->>Connector fn:response(201 Created)
     end
@@ -216,15 +261,15 @@ sequenceDiagram
 
   User->>Content HTTP trigger fn:crawl(crawlType)
   activate Content HTTP trigger fn
-  alt type=full
+  alt type-full
     Content HTTP trigger fn->>Content q:message(crawl, crawlType)
     Content q-->>Content HTTP trigger fn:response(201 Created)
     Content HTTP trigger fn-->>User:response(202 Accepted)
-  else type=incremental
+  else type-incremental
     Content HTTP trigger fn->>Content q:message(crawl, incremental)
     Content q-->>Content HTTP trigger fn:response(201 Created)
     Content HTTP trigger fn-->>User:response(202 Accepted)
-  else type=removeDeleted
+  else type-removeDeleted
     Content HTTP trigger fn->>Content q:message(crawl, removeDeleted)
     Content q-->>Content HTTP trigger fn:response(201 Created)
     Content HTTP trigger fn-->>User:response(202 Accepted)
@@ -251,13 +296,13 @@ sequenceDiagram
   activate Microsoft Graph
   activate External content
 
-  alt message=crawl
+  alt message-crawl
     Content q->>Content fn:message(crawl, crawlType)
     activate Content fn
-    alt crawlType=full
+    alt crawlType-full
       Content fn->>External content:getContent
       External content-->>Content fn:content
-    else crawlType=incremental
+    else crawlType-incremental
       Content fn->>State storage:getLatestItemDate
       State storage-->>Content fn:response(latestItemDate)
       Content fn->>External content:getContent(latestItemDate)
@@ -269,7 +314,7 @@ sequenceDiagram
       Content q-->>Content fn:response(201 Created)
     end
     deactivate Content fn
-  else message=item
+  else message-item
     Content q->>Content fn:message(item, update, itemId)
     activate Content fn
     Content fn->>External content:getContent(itemId)
@@ -309,7 +354,7 @@ sequenceDiagram
   activate Microsoft Graph
   activate External content
 
-  alt message=crawl
+  alt message-crawl
     Content q->>Content fn:message(crawl, removeDeleted)
     activate Content fn
     
@@ -328,7 +373,7 @@ sequenceDiagram
     deactivate Content fn
   end
 
-  alt message=item
+  alt message-item
     Content q->>Content fn:message(item, delete, itemId)
 
     Content fn->>Microsoft Graph:DELETE externalItem(itemId)

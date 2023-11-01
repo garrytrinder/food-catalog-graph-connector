@@ -2,42 +2,38 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "type": "func",
-      "label": "func: host start",
-      "command": "host start",
-      "problemMatcher": "$func-node-watch",
-      "isBackground": true,
-      "dependsOn": "npm build (functions)"
-    },
-    {
-      "type": "shell",
-      "label": "npm build (functions)",
-      "command": "npm run watch",
-      "dependsOn": "npm install (functions)",
-      "isBackground": true,
-      "problemMatcher": "$tsc-watch"
-    },
-    {
-      "type": "shell",
-      "label": "npm install (functions)",
-      "command": "npm install --no-audit"
-    },
-    {
-      "type": "shell",
-      "label": "npm prune (functions)",
-      "command": "npm prune --production",
-      "dependsOn": "npm build (functions)",
-      "problemMatcher": []
-    },
-    {
       "label": "TTK",
       "dependsOn": [
-        "npm install (functions)",
+        "npm install",
         "Ensure DevTunnel",
         "Start Azurite emulator",
         "Provision",
       ],
       "dependsOrder": "sequence"
+    },
+    {
+      "type": "shell",
+      "label": "npm install",
+      "command": "npm install --no-audit"
+    },
+    {
+      "type": "shell",
+      "label": "Run watch",
+      "command": "npm run watch",
+      "dependsOn": "npm install",
+      "isBackground": true,
+      "problemMatcher": "$tsc-watch"
+    },
+    {
+      "type": "func",
+      "label": "func: host start",
+      "command": "host start",
+      "problemMatcher": "$func-node-watch",
+      "isBackground": true,
+      "dependsOn": [
+        "npm install",
+        "Run watch"
+      ]
     },
     {
       "label": "Ensure DevTunnel",

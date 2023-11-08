@@ -14,12 +14,6 @@ provision:
       workingDirectory: scripts
 
   - uses: script
-    name: Ensure queues
-    with:
-      run: node queues.js
-      workingDirectory: scripts
-
-  - uses: script
     name: Increment manifest version
     with:
       run: node increment-version.js

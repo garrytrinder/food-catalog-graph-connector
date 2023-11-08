@@ -7,6 +7,7 @@
         "npm install",
         "Ensure DevTunnel",
         "Start Azurite emulator",
+        "Ensure env files",
         "Provision",
       ],
       "dependsOrder": "sequence"
@@ -34,6 +35,33 @@
         "npm install",
         "Run watch"
       ]
+    },
+    {
+      "label": "Ensure env files",
+      "type": "shell",
+      "command": "node ./scripts/env.js",
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": [
+          {
+            "regexp": "^.*$",
+            "file": 0,
+            "location": 1,
+            "message": 2
+          }
+        ],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Ensuring env files exist...",
+          "endsPattern": "Done!"
+        }
+      },
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "presentation": {
+        "reveal": "silent"
+      }
     },
     {
       "label": "Ensure DevTunnel",
